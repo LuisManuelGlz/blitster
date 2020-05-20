@@ -1,6 +1,6 @@
 import { Container } from "inversify";
 import { TYPES } from "../constants/types";
-import AuthService from "../services/auth";
+import AuthService from "../services/auth.service";
 
 const containter = new Container();
 

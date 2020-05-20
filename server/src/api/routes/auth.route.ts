@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import { check, validationResult } from "express-validator";
-import { containter } from "../../loaders/dependencyInjector";
-import AuthService from "../../services/auth";
+import { containter } from "../../config/inversify.config";
+import AuthService from "../../services/auth.service";
 import { TYPES } from "../../constants/types";
 import { IUserForRegisterDTO } from "../../interfaces/IUser";
 
