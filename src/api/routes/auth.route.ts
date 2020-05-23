@@ -1,8 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { check, validationResult } from 'express-validator';
-import containter from '../../config/inversify.config';
+import { Container } from 'typedi';
 import AuthService from '../../services/auth.service';
-import TYPES from '../../constants/types';
 
 const route = Router();
 
@@ -33,9 +32,7 @@ export default (app: Router): void => {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const authServiceInstance = containter.get<AuthService>(
-        TYPES.AuthService,
-      );
+      const authServiceInstance = Container.get(AuthService);
 
       console.log(authServiceInstance.SignUp(req.body));
 

@@ -8,6 +8,10 @@ declare global {
       NODE_ENV: 'development' | 'production' | 'test';
       PORT: string;
       MONGODB_URI: string;
+      MAILER_HOST: string;
+      MAILER_PORT: string;
+      MAILER_USER: string;
+      MAILER_PASS: string;
     }
   }
 

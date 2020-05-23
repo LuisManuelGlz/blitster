@@ -1,11 +1,19 @@
-import { injectable } from 'inversify';
+import { Container, Service } from 'typedi';
 import 'reflect-metadata';
 import { UserForRegisterDTO } from '../interfaces/user';
+import MailerService from './mailer.service';
 
-@injectable()
+@Service()
 export default class AuthService {
-  // eslint-disable-next-line class-methods-use-this
+  private readonly mailerService: MailerService;
+
+  constructor() {
+    this.mailerService = Container.get(MailerService);
+  }
+
   SignUp(userForRegisterDTO: UserForRegisterDTO): UserForRegisterDTO {
+    this.mailerService.SendEmail();
+
     return userForRegisterDTO;
   }
 }
