@@ -5,9 +5,8 @@ export interface User extends Document {
   username: string;
   email: string;
   avatar: string;
-  passwordSalt: string;
   passwordHash: string;
-  creationDate: Date;
+  isVerified: boolean;
 }
 
 export interface UserForRegisterDTO {

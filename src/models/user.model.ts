@@ -6,8 +6,9 @@ const User = new Schema(
     username: {
       type: String,
       required: true,
+      unique: true,
     },
-    emil: {
+    email: {
       type: String,
       required: true,
       unique: true,
@@ -19,13 +20,9 @@ const User = new Schema(
       type: String,
       required: true,
     },
-    passwordSalt: {
-      type: String,
-      required: true,
-    },
-    creationDate: {
-      type: Date,
-      default: Date.now,
+    isVerified: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true },
