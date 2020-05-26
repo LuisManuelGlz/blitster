@@ -18,10 +18,7 @@ export default class AuthService {
 
   async SignUp(userForRegisterDTO: UserForRegisterDTO): Promise<User> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    let { email } = userForRegisterDTO;
     const { password1 } = userForRegisterDTO;
-
-    email = email.trim();
 
     const salt = bcrypt.genSaltSync();
     const passwordHash = bcrypt.hashSync(password1, salt);

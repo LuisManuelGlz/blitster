@@ -1,4 +1,5 @@
-import { Router, Request, Response } from 'express';
+// eslint-disable-next-line object-curly-newline
+import { Router, Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
 import { Container } from 'typedi';
 import AuthService from '../../services/auth.service';
@@ -12,6 +13,7 @@ export default (app: Router): void => {
     '/signup',
     [
       body('username', 'Please write a username')
+        .trim()
         .custom(async (value) => {
           const user = await Container.get<Models.UserModel>(
             'userModel',
@@ -21,6 +23,8 @@ export default (app: Router): void => {
         .withMessage('Username already exists')
         .notEmpty(),
       body('email', "Please write your email, I won't spam you, I promise")
+        .normalizeEmail()
+        .trim()
         .isEmail()
         .withMessage('Please write a valid email address')
         .custom(async (value) => {
@@ -40,7 +44,8 @@ export default (app: Router): void => {
         .withMessage('Passwords must match')
         .notEmpty(),
     ],
-    async (req: Request, res: Response) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async (req: Request, res: Response, next: NextFunction) => {
       const errors = validationResult(req);
 
       if (!errors.isEmpty()) {
