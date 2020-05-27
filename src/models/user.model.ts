@@ -1,5 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { User } from '../interfaces/user';
+import ROLES from '../constants/roles';
 
 const User = new Schema(
   {
@@ -19,6 +20,10 @@ const User = new Schema(
     passwordHash: {
       type: String,
       required: true,
+    },
+    role: {
+      type: String,
+      default: ROLES.User,
     },
     isVerified: {
       type: Boolean,

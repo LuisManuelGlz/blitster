@@ -7,6 +7,9 @@ declare global {
   namespace NodeJS {
     export interface ProcessEnv {
       NODE_ENV: 'development' | 'production' | 'test';
+      TOKEN_TYPE: string;
+      SECRET_KEY: string;
+      ACCESS_TOKEN_LIFETIME: string;
       PORT: string;
       APP_URL: string;
       MONGODB_URI: string;

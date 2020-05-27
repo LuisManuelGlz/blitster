@@ -3,6 +3,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
 import { Container } from 'typedi';
 import AuthService from '../../services/auth.service';
+import { TokenOutput } from '../../interfaces/token';
 
 const route = Router();
 
@@ -52,11 +53,11 @@ export default (app: Router): void => {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const authServiceInstance = Container.get(AuthService);
+      const authServiceInstance: AuthService = Container.get(AuthService);
 
-      const user = await authServiceInstance.SignUp(req.body);
+      const response: TokenOutput = await authServiceInstance.signUp(req.body);
 
-      return res.status(201).json({ user });
+      return res.status(201).json(response);
     },
   );
 };
