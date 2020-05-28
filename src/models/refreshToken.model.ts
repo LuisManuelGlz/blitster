@@ -1,14 +1,14 @@
 import mongoose, { Schema } from 'mongoose';
-import { Token } from '../interfaces/token';
+import { RefreshToken } from '../interfaces/refreshToken';
 
-const Token = new Schema(
+const RefreshToken = new Schema(
   {
     user: {
       type: Schema.Types.ObjectId,
       required: true,
       ref: 'User',
     },
-    token: {
+    refreshToken: {
       type: String,
       require: true,
       unique: true,
@@ -17,4 +17,4 @@ const Token = new Schema(
   { timestamps: { createdAt: 'created_at' } },
 );
 
-export default mongoose.model<Token>('Token', Token);
+export default mongoose.model<RefreshToken>('RefreshToken', RefreshToken);

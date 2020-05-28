@@ -2,6 +2,7 @@
 import { Model } from 'mongoose';
 import { User } from '../../interfaces/user';
 import { Token } from '../../interfaces/token';
+import { RefreshToken } from '../../interfaces/refreshToken';
 
 declare global {
   namespace NodeJS {
@@ -23,5 +24,6 @@ declare global {
   namespace Models {
     export type UserModel = Model<User>;
     export type TokenModel = Model<Token>;
+    export type RefreshToken = Model<RefreshToken>;
   }
 }

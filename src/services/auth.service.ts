@@ -17,6 +17,7 @@ export default class AuthService {
   constructor(
     @Inject('userModel') private userModel: Models.UserModel,
     @Inject('tokenModel') private tokenModel: Models.TokenModel,
+    @Inject('refreshTokenModel') private refreshTokenModel: Models.RefreshToken,
   ) {
     this.mailerService = Container.get(MailerService);
   }
@@ -48,6 +49,11 @@ export default class AuthService {
 
     const tokenOutput = this.generateTokenOutput(user);
 
+    await this.refreshTokenModel.create({
+      user: userCreated,
+      refreshToken: tokenOutput.refreshToken,
+    });
+
     return tokenOutput;
   }
 
@@ -67,6 +73,11 @@ export default class AuthService {
     Reflect.deleteProperty(user, 'passwordHash');
 
     const tokenOutput = this.generateTokenOutput(user);
+
+    await this.refreshTokenModel.create({
+      user: userFetched,
+      refreshToken: tokenOutput.refreshToken,
+    });
 
     return tokenOutput;
   }
