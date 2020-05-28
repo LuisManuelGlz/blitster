@@ -55,9 +55,40 @@ export default (app: Router): void => {
 
       const authServiceInstance: AuthService = Container.get(AuthService);
 
-      const response: TokenOutput = await authServiceInstance.signUp(req.body);
+      try {
+        const response: TokenOutput = await authServiceInstance.signUp(
+          req.body,
+        );
 
-      return res.status(201).json(response);
+        return res.status(201).json(response);
+      } catch (error) {
+        return next(error);
+      }
+    },
+  );
+
+  route.post(
+    '/login',
+    [
+      body('username', 'Please write a username').trim().notEmpty(),
+      body('password', "Don't forget your password").notEmpty(),
+    ],
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async (req: Request, res: Response, next: NextFunction) => {
+      const errors = validationResult(req);
+
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const authServiceInstance: AuthService = Container.get(AuthService);
+
+      try {
+        const response: TokenOutput = await authServiceInstance.login(req.body);
+        return res.status(201).json(response);
+      } catch (error) {
+        return next(error);
+      }
     },
   );
 };

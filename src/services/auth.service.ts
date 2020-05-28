@@ -4,10 +4,11 @@ import bcrypt from 'bcrypt';
 import cripto from 'crypto';
 import jwt from 'jsonwebtoken';
 import randtoken from 'rand-token';
-import { UserForRegisterDTO, User } from '../interfaces/user';
+import { UserForRegisterDTO, UserForLoginDTO, User } from '../interfaces/user';
 import { TokenOutput } from '../interfaces/token';
 import MailerService from './mailer.service';
 import config from '../config';
+import { UnauthorizedError, NotFoundError } from '../helpers/errors';
 
 @Service()
 export default class AuthService {
@@ -45,7 +46,41 @@ export default class AuthService {
 
     Reflect.deleteProperty(user, 'passwordHash');
 
-    const accessToken = this.generateAccessToken(user);
+    const tokenOutput = this.generateTokenOutput(user);
+
+    return tokenOutput;
+  }
+
+  async login(userForLoginDTO: UserForLoginDTO): Promise<TokenOutput> {
+    const { username, password } = userForLoginDTO;
+
+    const userFetched = await this.userModel.findOne({ username });
+
+    if (!userFetched) throw new NotFoundError('User not found!');
+
+    const isValid = bcrypt.compareSync(password, userFetched.passwordHash);
+
+    if (!isValid) throw new UnauthorizedError('Incorrect password');
+
+    const user = userFetched.toObject();
+
+    Reflect.deleteProperty(user, 'passwordHash');
+
+    const tokenOutput = this.generateTokenOutput(user);
+
+    return tokenOutput;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private generateTokenOutput(user: User): TokenOutput {
+    const userData = {
+      // eslint-disable-next-line no-underscore-dangle
+      _id: user._id,
+      username: user.username,
+      role: user.role,
+    };
+
+    const accessToken = jwt.sign(userData, config.secretKey);
 
     const refreshToken = randtoken.uid(80);
 
@@ -55,21 +90,5 @@ export default class AuthService {
       refreshToken,
       expiresIn: config.AccessTokenLifetime,
     };
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  private generateAccessToken(user: User): string {
-    console.log(config.secretKey);
-
-    const userData = {
-      // eslint-disable-next-line no-underscore-dangle
-      _id: user._id,
-      username: user.username,
-      role: user.role,
-    };
-
-    const token = jwt.sign(userData, config.secretKey);
-
-    return token;
   }
 }

@@ -1,7 +1,8 @@
 import HttpError from './httpError.helper';
 
 export default class UnauthorizedError extends HttpError {
-  constructor() {
-    super(401, 'Unauthorized');
+  constructor(message = 'Unauthorized') {
+    super(401, message);
+    this.message = message;
   }
 }

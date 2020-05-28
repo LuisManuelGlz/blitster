@@ -1,5 +1,8 @@
 import HttpError from './httpError.helper';
+import BadRequestError from './badRequestError.helper';
 import NotFoundError from './notFoundError.helper';
-import Unauthorized from './unauthorizedError.helper';
+import UnauthorizedError from './unauthorizedError.helper';
 
-export { HttpError, NotFoundError, Unauthorized };
+export {
+  HttpError, BadRequestError, NotFoundError, UnauthorizedError,
+};
