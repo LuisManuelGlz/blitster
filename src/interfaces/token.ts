@@ -12,3 +12,9 @@ export interface TokenOutput {
   refreshToken: string;
   expiresIn: number;
 }
+
+export interface AccessTokenOutput {
+  tokenType: string;
+  accessToken: string;
+  expiresIn: number;
+}

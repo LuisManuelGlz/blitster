@@ -45,7 +45,6 @@ export default (app: Router): void => {
         .withMessage('Passwords must match')
         .notEmpty(),
     ],
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async (req: Request, res: Response, next: NextFunction) => {
       const errors = validationResult(req);
 
@@ -73,7 +72,6 @@ export default (app: Router): void => {
       body('username', 'Please write a username').trim().notEmpty(),
       body('password', "Don't forget your password").notEmpty(),
     ],
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async (req: Request, res: Response, next: NextFunction) => {
       const errors = validationResult(req);
 
@@ -86,6 +84,20 @@ export default (app: Router): void => {
       try {
         const response: TokenOutput = await authServiceInstance.login(req.body);
         return res.status(201).json(response);
+      } catch (error) {
+        return next(error);
+      }
+    },
+  );
+
+  route.post(
+    '/refresh',
+    async (req: Request, res: Response, next: NextFunction) => {
+      const authServiceInstance: AuthService = Container.get(AuthService);
+
+      try {
+        const accessTokenOutput = await authServiceInstance.refresh(req.body);
+        return res.json(accessTokenOutput);
       } catch (error) {
         return next(error);
       }

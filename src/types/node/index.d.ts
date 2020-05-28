@@ -24,6 +24,6 @@ declare global {
   namespace Models {
     export type UserModel = Model<User>;
     export type TokenModel = Model<Token>;
-    export type RefreshToken = Model<RefreshToken>;
+    export type RefreshTokenModel = Model<RefreshToken>;
   }
 }
