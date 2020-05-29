@@ -2,18 +2,21 @@ import { Container, Service, Inject } from 'typedi';
 import 'reflect-metadata';
 import bcrypt from 'bcrypt';
 import cripto from 'crypto';
-import jwt from 'jsonwebtoken';
-import randtoken from 'rand-token';
-import { UserForRegisterDTO, UserForLoginDTO, User } from '../interfaces/user';
-import { TokenOutput, AccessTokenOutput } from '../interfaces/token';
-import { RefreshTokenForTokenDTO } from '../interfaces/refreshToken';
+import { UserForRegisterDTO, UserForLoginDTO } from '../interfaces/user';
+import {
+  RefreshTokenForTokenDTO,
+  TokenOutput,
+} from '../interfaces/refreshToken';
 import MailerService from './mailer.service';
 import config from '../config';
 import { UnauthorizedError, NotFoundError } from '../helpers/errors';
+import JwtService from './jwtService';
 
 @Service()
 export default class AuthService {
   private readonly mailerService: MailerService;
+
+  private readonly jwtServiceToken: JwtService;
 
   constructor(
     @Inject('userModel') private userModel: Models.UserModel,
@@ -22,6 +25,7 @@ export default class AuthService {
     private refreshTokenModel: Models.RefreshTokenModel,
   ) {
     this.mailerService = Container.get(MailerService);
+    this.jwtServiceToken = Container.get(JwtService);
   }
 
   async signUp(userForRegisterDTO: UserForRegisterDTO): Promise<TokenOutput> {
@@ -41,54 +45,98 @@ export default class AuthService {
     this.mailerService.SendEmail(userCreated.email, token);
     const user = userCreated.toObject();
     Reflect.deleteProperty(user, 'passwordHash');
-    const tokenOutput = this.generateTokenOutput(user);
+    const payload = {
+      _id: user._id,
+      username: user.username,
+      role: user.role,
+    };
+    const accessToken = this.jwtServiceToken.generateAccessToken(payload);
+    const refreshToken = this.jwtServiceToken.generateRefreshToken();
+
     await this.refreshTokenModel.create({
       user: userCreated,
-      refreshToken: tokenOutput.refreshToken,
+      refreshToken,
     });
 
-    return tokenOutput;
+    return {
+      tokenType: config.tokenType,
+      accessToken,
+      refreshToken,
+      expiresIn: config.AccessTokenLifetime,
+    };
   }
 
   async login(userForLoginDTO: UserForLoginDTO): Promise<TokenOutput> {
     const { username, password } = userForLoginDTO;
     const userFetched = await this.userModel.findOne({ username });
+
     if (!userFetched) throw new NotFoundError('User not found!');
+
     const isPasswordValid = bcrypt.compareSync(
       password,
       userFetched.passwordHash,
     );
+
     if (!isPasswordValid) throw new UnauthorizedError('Incorrect password');
+
     const user = userFetched.toObject();
+
     Reflect.deleteProperty(user, 'passwordHash');
-    const tokenOutput = this.generateTokenOutput(user);
+
+    const payload = {
+      _id: user._id,
+      username: user.username,
+      role: user.role,
+    };
+    const accessToken = this.jwtServiceToken.generateAccessToken(payload);
+    const refreshToken = this.jwtServiceToken.generateRefreshToken();
+
     await this.refreshTokenModel.create({
       user: userFetched,
-      refreshToken: tokenOutput.refreshToken,
+      refreshToken,
     });
 
-    return tokenOutput;
+    return {
+      tokenType: config.tokenType,
+      accessToken,
+      refreshToken,
+      expiresIn: config.AccessTokenLifetime,
+    };
   }
 
   async refresh(
     refreshTokenForTokenDTO: RefreshTokenForTokenDTO,
-  ): Promise<AccessTokenOutput> {
+  ): Promise<TokenOutput> {
     const { userId, refreshToken } = refreshTokenForTokenDTO;
     const refreshTokenFetched = await this.refreshTokenModel.findOne({
       refreshToken,
     });
+
     if (!refreshTokenFetched) {
       throw new UnauthorizedError("Refresh token doesn't exist");
     }
+
     if (refreshTokenFetched.user.toString() === userId) {
       const userFetched = await this.userModel.findById(userId);
+
       if (!userFetched) throw new NotFoundError('User not found!');
-      const accessTokenOutput = this.generateAccessTokenOutput(userFetched);
+
+      const payload = {
+        _id: userFetched._id,
+        username: userFetched.username,
+        role: userFetched.role,
+      };
+      const accessToken = this.jwtServiceToken.generateAccessToken(payload);
+
       await this.refreshTokenModel.findByIdAndUpdate(refreshTokenFetched._id, {
-        refreshToken: accessTokenOutput.accessToken,
+        refreshToken: accessToken,
       });
 
-      return accessTokenOutput;
+      return {
+        tokenType: config.tokenType,
+        accessToken,
+        expiresIn: config.AccessTokenLifetime,
+      };
     }
 
     throw new UnauthorizedError();
@@ -98,40 +146,9 @@ export default class AuthService {
     const refreshTokenDeleted = await this.refreshTokenModel.findOneAndDelete({
       refreshToken,
     });
+
     if (!refreshTokenDeleted) {
       throw new UnauthorizedError("Refresh token doesn't exist");
     }
-  }
-
-  private generateTokenOutput(user: User): TokenOutput {
-    const userData = {
-      _id: user._id,
-      username: user.username,
-      role: user.role,
-    };
-    const accessToken = jwt.sign(userData, config.secretKey);
-    const refreshToken = randtoken.uid(80);
-
-    return {
-      tokenType: config.tokenType,
-      accessToken,
-      refreshToken,
-      expiresIn: config.AccessTokenLifetime,
-    };
-  }
-
-  private generateAccessTokenOutput(user: User): AccessTokenOutput {
-    const userData = {
-      _id: user._id,
-      username: user.username,
-      role: user.role,
-    };
-    const accessToken = jwt.sign(userData, config.secretKey);
-
-    return {
-      tokenType: config.tokenType,
-      accessToken,
-      expiresIn: config.AccessTokenLifetime,
-    };
   }
 }

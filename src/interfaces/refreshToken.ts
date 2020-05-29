@@ -10,3 +10,10 @@ export interface RefreshTokenForTokenDTO {
   userId: string;
   refreshToken: string;
 }
+
+export interface TokenOutput {
+  tokenType: string;
+  accessToken: string;
+  refreshToken?: string;
+  expiresIn: number;
+}

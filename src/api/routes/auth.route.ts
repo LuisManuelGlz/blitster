@@ -3,7 +3,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
 import { Container } from 'typedi';
 import AuthService from '../../services/auth.service';
-import { TokenOutput } from '../../interfaces/token';
+import { TokenOutput } from '../../interfaces/refreshToken';
 
 const route = Router();
 
@@ -47,10 +47,13 @@ export default (app: Router): void => {
     ],
     async (req: Request, res: Response, next: NextFunction) => {
       const errors = validationResult(req);
+
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
+
       const authServiceInstance: AuthService = Container.get(AuthService);
+
       try {
         const response: TokenOutput = await authServiceInstance.signUp(
           req.body,
@@ -71,13 +74,15 @@ export default (app: Router): void => {
     ],
     async (req: Request, res: Response, next: NextFunction) => {
       const errors = validationResult(req);
+
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
+
       const authServiceInstance: AuthService = Container.get(AuthService);
+
       try {
         const response: TokenOutput = await authServiceInstance.login(req.body);
-
         return res.status(201).json(response);
       } catch (error) {
         return next(error);
@@ -93,10 +98,13 @@ export default (app: Router): void => {
     ],
     async (req: Request, res: Response, next: NextFunction) => {
       const errors = validationResult(req);
+
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
+
       const authServiceInstance: AuthService = Container.get(AuthService);
+
       try {
         const accessTokenOutput = await authServiceInstance.refresh(req.body);
         return res.json(accessTokenOutput);
@@ -111,10 +119,13 @@ export default (app: Router): void => {
     body('refreshToken', 'Refresh token is required').trim().notEmpty(),
     async (req: Request, res: Response, next: NextFunction) => {
       const errors = validationResult(req);
+
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
+
       const authServiceInstance: AuthService = Container.get(AuthService);
+
       try {
         await authServiceInstance.revoke(req.body.refreshToken);
         return res.status(204).end();
