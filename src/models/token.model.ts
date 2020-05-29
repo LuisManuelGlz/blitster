@@ -8,7 +8,7 @@ const Token = new Schema(
       required: true,
       ref: 'User',
     },
-    token: {
+    verificationToken: {
       type: String,
       require: true,
       unique: true,

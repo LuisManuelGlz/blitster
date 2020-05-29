@@ -3,5 +3,5 @@ import { User } from './user';
 
 export interface Token extends Document {
   user: User;
-  token: string;
+  verificationToken: string;
 }

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Container } from 'typedi';
 import config from '../../config';
 import { UnauthorizedError } from '../../helpers/errors';
-import JwtService from '../../services/jwtService';
+import JwtService from '../../services/jwt.service';
 
 export default (req: Request, res: Response, next: NextFunction): void => {
   const token = req.headers.authorization;

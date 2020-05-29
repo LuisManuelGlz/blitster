@@ -1,6 +1,6 @@
 // eslint-disable-next-line object-curly-newline
 import { Router, Request, Response, NextFunction } from 'express';
-import { body, validationResult } from 'express-validator';
+import { param, body, validationResult } from 'express-validator';
 import { Container } from 'typedi';
 import AuthService from '../../services/auth.service';
 import { TokenOutput } from '../../interfaces/refreshToken';
@@ -83,7 +83,7 @@ export default (app: Router): void => {
 
       try {
         const response: TokenOutput = await authServiceInstance.login(req.body);
-        return res.status(201).json(response);
+        return res.status(200).json(response);
       } catch (error) {
         return next(error);
       }
@@ -106,8 +106,11 @@ export default (app: Router): void => {
       const authServiceInstance: AuthService = Container.get(AuthService);
 
       try {
-        const accessTokenOutput = await authServiceInstance.refresh(req.body);
-        return res.json(accessTokenOutput);
+        const response: TokenOutput = await authServiceInstance.refresh(
+          req.body,
+        );
+
+        return res.status(200).json(response);
       } catch (error) {
         return next(error);
       }
@@ -129,6 +132,29 @@ export default (app: Router): void => {
       try {
         await authServiceInstance.revoke(req.body.refreshToken);
         return res.status(204).end();
+      } catch (error) {
+        return next(error);
+      }
+    },
+  );
+
+  route.get(
+    '/verify-email/:verificationToken',
+    param('verificationToken', 'Verification token is required').notEmpty(),
+    async (req: Request, res: Response, next: NextFunction) => {
+      const errors = validationResult(req);
+
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const authServiceInstance: AuthService = Container.get(AuthService);
+
+      try {
+        await authServiceInstance.vefiryEmail(req.params.verificationToken);
+        return res
+          .status(200)
+          .json({ message: 'Great! Your email has been verified' });
       } catch (error) {
         return next(error);
       }

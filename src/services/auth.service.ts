@@ -1,7 +1,7 @@
 import { Container, Service, Inject } from 'typedi';
 import 'reflect-metadata';
 import bcrypt from 'bcrypt';
-import cripto from 'crypto';
+import randtoken from 'rand-token';
 import { UserForRegisterDTO, UserForLoginDTO } from '../interfaces/user';
 import {
   RefreshTokenForTokenDTO,
@@ -10,7 +10,7 @@ import {
 import MailerService from './mailer.service';
 import config from '../config';
 import { UnauthorizedError, NotFoundError } from '../helpers/errors';
-import JwtService from './jwtService';
+import JwtService from './jwt.service';
 
 @Service()
 export default class AuthService {
@@ -36,19 +36,20 @@ export default class AuthService {
       ...userForRegisterDTO,
       passwordHash,
     });
-    const token = cripto.randomBytes(16).toString('hex');
+    const verificationToken = randtoken.uid(32);
 
     await this.tokenModel.create({
       user: userCreated,
-      token,
+      verificationToken,
     });
-    this.mailerService.SendEmail(userCreated.email, token);
+    this.mailerService.SendEmail(userCreated.email, verificationToken);
     const user = userCreated.toObject();
     Reflect.deleteProperty(user, 'passwordHash');
     const payload = {
       _id: user._id,
       username: user.username,
       role: user.role,
+      isVerified: user.isVerified,
     };
     const accessToken = this.jwtServiceToken.generateAccessToken(payload);
     const refreshToken = this.jwtServiceToken.generateRefreshToken();
@@ -87,6 +88,7 @@ export default class AuthService {
       _id: user._id,
       username: user.username,
       role: user.role,
+      isVerified: user.isVerified,
     };
     const accessToken = this.jwtServiceToken.generateAccessToken(payload);
     const refreshToken = this.jwtServiceToken.generateRefreshToken();
@@ -102,6 +104,20 @@ export default class AuthService {
       refreshToken,
       expiresIn: config.AccessTokenLifetime,
     };
+  }
+
+  async vefiryEmail(verificationToken: string): Promise<void> {
+    const verificationTokenFetched = await this.tokenModel.findOne({
+      verificationToken,
+    });
+
+    if (!verificationTokenFetched) {
+      throw new NotFoundError('Verification token not found!');
+    }
+
+    await this.userModel.findByIdAndUpdate(verificationTokenFetched.user, {
+      isVerified: true,
+    });
   }
 
   async refresh(
@@ -125,6 +141,7 @@ export default class AuthService {
         _id: userFetched._id,
         username: userFetched.username,
         role: userFetched.role,
+        isVerified: userFetched.isVerified,
       };
       const accessToken = this.jwtServiceToken.generateAccessToken(payload);
 

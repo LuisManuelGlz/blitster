@@ -21,7 +21,7 @@ export default class MailerService {
         <h1>Welcome to Blitster 😎!</h1>
         <br/>
         <p>Please verify your email address, it will only take a second</p>
-        <a href="${appDomain}/auth/verify/${token}">
+        <a href="${appDomain}/auth/verify-email/${token}">
           Verify email address
         </a>
       `,

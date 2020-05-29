@@ -6,5 +6,6 @@ export default async (): Promise<void> => {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
+    useFindAndModify: false,
   });
 };
