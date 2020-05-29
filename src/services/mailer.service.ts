@@ -8,11 +8,9 @@ export default class MailerService {
 
   async SendEmail(email: string, token: string): Promise<void> {
     let appDomain = config.appUrl;
-
     if (process.env.NODE_ENV === 'development') {
       appDomain = `${config.appUrl}:${config.port}`;
     }
-
     const mailOptions = {
       from: 'no-reply@inbox.mailtrap.io',
       to: email,
@@ -26,9 +24,7 @@ export default class MailerService {
         </a>
       `,
     };
-
     const info = await this.emailClient.sendMail(mailOptions);
-
     console.log('Message sent: %s', info.messageId);
   }
 }

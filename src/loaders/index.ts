@@ -18,12 +18,10 @@ export default async ({
     name: 'userModel',
     model: UserModel,
   };
-
   const tokenModel = {
     name: 'tokenModel',
     model: TokenModel,
   };
-
   const refreshTokenModel = {
     name: 'refreshTokenModel',
     model: RefreshTokenModel,

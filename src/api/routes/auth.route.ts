@@ -47,13 +47,10 @@ export default (app: Router): void => {
     ],
     async (req: Request, res: Response, next: NextFunction) => {
       const errors = validationResult(req);
-
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
-
       const authServiceInstance: AuthService = Container.get(AuthService);
-
       try {
         const response: TokenOutput = await authServiceInstance.signUp(
           req.body,
@@ -74,15 +71,13 @@ export default (app: Router): void => {
     ],
     async (req: Request, res: Response, next: NextFunction) => {
       const errors = validationResult(req);
-
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
-
       const authServiceInstance: AuthService = Container.get(AuthService);
-
       try {
         const response: TokenOutput = await authServiceInstance.login(req.body);
+
         return res.status(201).json(response);
       } catch (error) {
         return next(error);
@@ -92,12 +87,37 @@ export default (app: Router): void => {
 
   route.post(
     '/refresh',
+    [
+      body('userId', 'User id is requiered').trim().notEmpty(),
+      body('refreshToken', 'Refresh token is required').trim().notEmpty(),
+    ],
     async (req: Request, res: Response, next: NextFunction) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
       const authServiceInstance: AuthService = Container.get(AuthService);
-
       try {
         const accessTokenOutput = await authServiceInstance.refresh(req.body);
         return res.json(accessTokenOutput);
+      } catch (error) {
+        return next(error);
+      }
+    },
+  );
+
+  route.post(
+    '/revoke',
+    body('refreshToken', 'Refresh token is required').trim().notEmpty(),
+    async (req: Request, res: Response, next: NextFunction) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      const authServiceInstance: AuthService = Container.get(AuthService);
+      try {
+        await authServiceInstance.revoke(req.body.refreshToken);
+        return res.status(204).end();
       } catch (error) {
         return next(error);
       }
