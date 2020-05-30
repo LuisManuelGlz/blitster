@@ -2,10 +2,10 @@ import express, { Application } from 'express';
 import loaders from './loaders';
 import config from './config';
 
-const startServer = (): void => {
+const startServer = async (): Promise<void> => {
   const app: Application = express();
 
-  loaders({ expressApp: app });
+  await loaders({ expressApp: app });
 
   app.listen(config.port, () => {
     console.log(`Server listening at http://localhost:${config.port} 🌎`);
