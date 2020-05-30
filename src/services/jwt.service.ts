@@ -16,9 +16,11 @@ export default class JwtService {
     return randtoken.uid(80);
   }
 
-  verifyToken(token: string): void {
-    jwt.verify(token, config.secretKey, (error) => {
-      if (error) throw new UnauthorizedError();
-    });
+  verifyToken(token: string): string | object {
+    try {
+      return jwt.verify(token, config.secretKey);
+    } catch {
+      throw new UnauthorizedError();
+    }
   }
 }
