@@ -3,6 +3,8 @@ import { Model } from 'mongoose';
 import { User } from '../../interfaces/user';
 import { Token } from '../../interfaces/token';
 import { RefreshToken } from '../../interfaces/refreshToken';
+import { Post } from '../../interfaces/post';
+import { Comment } from '../../interfaces/comment';
 
 declare global {
   namespace NodeJS {
@@ -21,9 +23,17 @@ declare global {
     }
   }
 
+  namespace Express {
+    export interface Request {
+      userId?: string;
+    }
+  }
+
   namespace Models {
     export type UserModel = Model<User>;
     export type TokenModel = Model<Token>;
     export type RefreshTokenModel = Model<RefreshToken>;
+    export type PostModel = Model<PostModel>;
+    export type Comment = Model<Comment>;
   }
 }
