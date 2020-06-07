@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import path from 'path';
 import routes from '../api';
 import { HttpError } from '../helpers/errors';
+import middlewares from '../api/middlewares';
 
 export default ({ app }: { app: Application }): void => {
   // middlewares
@@ -14,7 +15,11 @@ export default ({ app }: { app: Application }): void => {
   app.use(express.json());
 
   // static files
-  app.use('/uploads', express.static(path.resolve('uploads')));
+  app.use(
+    '/uploads',
+    middlewares.auth,
+    express.static(path.resolve('uploads')),
+  );
 
   app.use('/api', routes());
 
