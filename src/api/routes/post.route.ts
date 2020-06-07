@@ -8,7 +8,7 @@ import { body, validationResult } from 'express-validator';
 import PostService from '../../services/post.service';
 import middlewares from '../middlewares/index';
 import { BadRequestError } from '../../helpers/errors';
-import { PostForListDTO } from '../../interfaces/post';
+import { PostForListDTO, PostForDetailDTO } from '../../interfaces/post';
 
 const storage = multer.diskStorage({
   destination: 'uploads',
@@ -47,9 +47,15 @@ export default (app: Router): void => {
     }
   });
 
-  route.get('/:id', (req: Request, res: Response, next: NextFunction) => {
+  route.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
+    const postServiceInstance: PostService = Container.get(PostService);
+
     try {
-      return res.send('ok');
+      const response: PostForDetailDTO = await postServiceInstance.getPost(
+        req.params.id,
+      );
+
+      return res.send(response);
     } catch (error) {
       return next(error);
     }
