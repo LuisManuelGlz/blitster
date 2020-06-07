@@ -33,7 +33,7 @@ declare global {
     export type UserModel = Model<User>;
     export type TokenModel = Model<Token>;
     export type RefreshTokenModel = Model<RefreshToken>;
-    export type PostModel = Model<PostModel>;
+    export type PostModel = Model<Post>;
     export type Comment = Model<Comment>;
   }
 }

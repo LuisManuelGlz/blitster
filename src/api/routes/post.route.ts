@@ -1,5 +1,5 @@
 // eslint-disable-next-line object-curly-newline
-import { Router, Request, Response, NextFunction, Express } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import Container from 'typedi';
 import path from 'path';
 import multer from 'multer';
@@ -8,6 +8,7 @@ import { body, validationResult } from 'express-validator';
 import PostService from '../../services/post.service';
 import middlewares from '../middlewares/index';
 import { BadRequestError } from '../../helpers/errors';
+import { PostForListDTO } from '../../interfaces/post';
 
 const storage = multer.diskStorage({
   destination: 'uploads',
@@ -35,7 +36,18 @@ const route = Router();
 export default (app: Router): void => {
   app.use('/posts', route);
 
-  route.get('/', (req: Request, res: Response, next: NextFunction) => {
+  route.get('/', async (req: Request, res: Response, next: NextFunction) => {
+    const postServiceInstance: PostService = Container.get(PostService);
+
+    try {
+      const response: PostForListDTO[] = await postServiceInstance.getPosts();
+      return res.status(200).json(response);
+    } catch (error) {
+      return next(error);
+    }
+  });
+
+  route.get('/:id', (req: Request, res: Response, next: NextFunction) => {
     try {
       return res.send('ok');
     } catch (error) {
@@ -47,7 +59,7 @@ export default (app: Router): void => {
     '/',
     middlewares.auth,
     upload.array('images', 12),
-    [body('content', "Ooops! Don't forget to write something...").notEmpty()],
+    body('content', "Ooops! Don't forget to write something...").notEmpty(),
     async (req: Request, res: Response, next: NextFunction) => {
       const errors = validationResult(req);
 

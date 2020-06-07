@@ -1,5 +1,6 @@
 import { Document } from 'mongoose';
 import { User } from './user';
+import { Comment } from './comment';
 
 export interface Post extends Document {
   _id: string;
@@ -7,8 +8,28 @@ export interface Post extends Document {
   content: string;
   images: string[];
   likes: User[];
+  comments: Comment[];
   createdAt: Date;
-  updatedAt: Date;
+}
+
+export interface PostForListDTO {
+  _id: string;
+  user: User;
+  content: string;
+  images: string[];
+  likes: number;
+  comments: number;
+  createdAt: Date;
+}
+
+export interface PostForDetailDTO {
+  _id: string;
+  user: User;
+  content: string;
+  images: string[];
+  likes: User[];
+  comments: Comment[];
+  createdAt: Date;
 }
 
 export interface PostForCreateDTO {

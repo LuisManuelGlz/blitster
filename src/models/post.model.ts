@@ -33,7 +33,7 @@ const Post = new Schema(
       },
     ],
   },
-  { timestamps: true },
+  { timestamps: { createdAt: 'created_at' } },
 );
 
 export default mongoose.model<Post>('Post', Post);
