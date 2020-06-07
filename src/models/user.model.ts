@@ -16,6 +16,8 @@ const User = new Schema(
     },
     avatar: {
       type: String,
+      default:
+        'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
     },
     passwordHash: {
       type: String,
