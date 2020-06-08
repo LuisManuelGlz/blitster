@@ -161,4 +161,21 @@ export default (app: Router): void => {
       }
     },
   );
+
+  route.delete(
+    '/comment/:commentId',
+    middlewares.auth,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const commentServiceInstance: CommentService = Container.get(
+        CommentService,
+      );
+
+      try {
+        await commentServiceInstance.deleteComment(req.params.commentId);
+        return res.status(204).end();
+      } catch (error) {
+        return next(error);
+      }
+    },
+  );
 };

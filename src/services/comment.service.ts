@@ -32,7 +32,7 @@ export default class CommentService {
       throw new NotFoundError('Comment not found!');
     }
 
-    const commentDeleted = await this.postModel.findByIdAndDelete(commentId);
+    const commentDeleted = await this.commentModel.findByIdAndDelete(commentId);
 
     if (!commentDeleted) throw new NotFoundError('Comment not found!');
   }
