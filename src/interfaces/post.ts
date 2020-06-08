@@ -7,7 +7,7 @@ export interface Post extends Document {
   user: User;
   content: string;
   images: string[];
-  likes: User[];
+  likes: { user: string }[];
   comments: Comment[];
   createdAt: Date;
 }
@@ -27,7 +27,7 @@ export interface PostForDetailDTO {
   user: User;
   content: string;
   images: string[];
-  likes: User[];
+  likes: { user: string }[];
   comments: Comment[];
   createdAt: Date;
 }

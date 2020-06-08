@@ -58,4 +58,31 @@ export default class PostService {
 
     postDeleted.images.map((image: string) => unlinkSync(`.${image}`));
   }
+
+  async likePost(postId: string, userId: string): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/prefer-regexp-exec
+    if (!postId.match(/^[0-9a-fA-F]{24}$/)) {
+      throw new NotFoundError('Post not found!');
+    }
+
+    const postFetched = await this.postModel.findById(postId);
+
+    if (!postFetched) throw new NotFoundError('Post not found!');
+
+    if (
+      postFetched.likes.filter(
+        ({ user }: { user: string }) => user.toString() === userId,
+      ).length === 0
+    ) {
+      postFetched.likes.unshift({ user: userId });
+    } else {
+      const removeIndex = postFetched.likes
+        .map(({ user }: { user: string }) => user.toString())
+        .indexOf(userId);
+
+      postFetched.likes.splice(removeIndex, 1);
+    }
+
+    await postFetched.save();
+  }
 }

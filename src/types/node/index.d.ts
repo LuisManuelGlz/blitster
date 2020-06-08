@@ -25,7 +25,7 @@ declare global {
 
   namespace Express {
     export interface Request {
-      userId?: string;
+      userId: string;
     }
   }
 
@@ -34,6 +34,6 @@ declare global {
     export type TokenModel = Model<Token>;
     export type RefreshTokenModel = Model<RefreshToken>;
     export type PostModel = Model<Post>;
-    export type Comment = Model<Comment>;
+    export type CommentModel = Model<Comment>;
   }
 }

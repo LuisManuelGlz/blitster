@@ -114,4 +114,19 @@ export default (app: Router): void => {
       }
     },
   );
+
+  route.post(
+    '/like/:postId',
+    middlewares.auth,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const postServiceInstance: PostService = Container.get(PostService);
+
+      try {
+        await postServiceInstance.likePost(req.params.postId, req.userId);
+        return res.status(204).end();
+      } catch (error) {
+        return next(error);
+      }
+    },
+  );
 };
