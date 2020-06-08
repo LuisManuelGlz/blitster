@@ -14,7 +14,7 @@ const Token = new Schema(
       unique: true,
     },
   },
-  { timestamps: { createdAt: 'created_at' } },
+  { timestamps: true },
 );
 
 export default mongoose.model<Token>('Token', Token);

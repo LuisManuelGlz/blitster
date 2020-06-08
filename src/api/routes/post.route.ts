@@ -6,6 +6,7 @@ import multer from 'multer';
 import randtoken from 'rand-token';
 import { body, validationResult } from 'express-validator';
 import PostService from '../../services/post.service';
+import CommentService from '../../services/comment.service';
 import middlewares from '../middlewares/index';
 import { BadRequestError } from '../../helpers/errors';
 import { PostForListDTO, PostForDetailDTO } from '../../interfaces/post';
@@ -83,15 +84,16 @@ export default (app: Router): void => {
 
       const postServiceInstance: PostService = Container.get(PostService);
 
+      const images = JSON.parse(JSON.stringify(req.files)).map(
+        (file: Express.Multer.File) => `/uploads/${file.filename}`,
+      );
+      const postForCreateDTO = {
+        user: req.userId,
+        images,
+        ...req.body,
+      };
+
       try {
-        const images = JSON.parse(JSON.stringify(req.files)).map(
-          (file: Express.Multer.File) => `/uploads/${file.filename}`,
-        );
-        const postForCreateDTO = {
-          user: req.userId,
-          images,
-          ...req.body,
-        };
         await postServiceInstance.createPost(postForCreateDTO);
         return res.status(201).json('Post created!');
       } catch (error) {
@@ -124,6 +126,36 @@ export default (app: Router): void => {
       try {
         await postServiceInstance.likePost(req.params.postId, req.userId);
         return res.status(204).end();
+      } catch (error) {
+        return next(error);
+      }
+    },
+  );
+
+  route.post(
+    '/comment-post/:postId',
+    middlewares.auth,
+    body('content', "Ooops! Don't forget to write something...").notEmpty(),
+    async (req: Request, res: Response, next: NextFunction) => {
+      const errors = validationResult(req);
+
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const commentServiceInstance: CommentService = Container.get(
+        CommentService,
+      );
+
+      const commentForCreateDTO = {
+        user: req.userId,
+        postId: req.params.postId,
+        ...req.body,
+      };
+
+      try {
+        await commentServiceInstance.commentPost(commentForCreateDTO);
+        return res.status(201).end();
       } catch (error) {
         return next(error);
       }

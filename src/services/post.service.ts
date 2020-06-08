@@ -11,7 +11,10 @@ import { NotFoundError } from '../helpers/errors';
 
 @Service()
 export default class PostService {
-  constructor(@Inject('postModel') private postModel: Models.PostModel) {}
+  constructor(
+    @Inject('postModel') private postModel: Models.PostModel,
+    @Inject('userModel') private userModel: Models.UserModel,
+  ) {}
 
   async getPosts(): Promise<PostForListDTO[]> {
     const postsFetched = await this.postModel.find({});
@@ -28,12 +31,15 @@ export default class PostService {
   }
 
   async getPost(postId: string): Promise<PostForDetailDTO> {
-    // eslint-disable-next-line @typescript-eslint/prefer-regexp-exec
-    if (!postId.match(/^[0-9a-fA-F]{24}$/)) {
+    if (!/^[0-9a-fA-F]{24}$/.exec(postId)) {
       throw new NotFoundError('Post not found!');
     }
 
-    const postFetched = await this.postModel.findById(postId).select('-__v');
+    const postFetched = await this.postModel
+      .findById(postId)
+      .select('-__v')
+      .populate('likes', ['_id', 'username', 'avatar'])
+      .populate('comments', ['-__v']);
 
     if (!postFetched) throw new NotFoundError('Post not found!');
 
@@ -47,8 +53,7 @@ export default class PostService {
   }
 
   async deletePost(postId: string): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/prefer-regexp-exec
-    if (!postId.match(/^[0-9a-fA-F]{24}$/)) {
+    if (!/^[0-9a-fA-F]{24}$/.exec(postId)) {
       throw new NotFoundError('Post not found!');
     }
 
@@ -60,8 +65,7 @@ export default class PostService {
   }
 
   async likePost(postId: string, userId: string): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/prefer-regexp-exec
-    if (!postId.match(/^[0-9a-fA-F]{24}$/)) {
+    if (!/^[0-9a-fA-F]{24}$/.exec(postId)) {
       throw new NotFoundError('Post not found!');
     }
 
@@ -70,14 +74,17 @@ export default class PostService {
     if (!postFetched) throw new NotFoundError('Post not found!');
 
     if (
-      postFetched.likes.filter(
-        ({ user }: { user: string }) => user.toString() === userId,
-      ).length === 0
+      postFetched.likes.filter((user) => user.toString() === userId).length ===
+      0
     ) {
-      postFetched.likes.unshift({ user: userId });
+      const userFetched = await this.userModel.findById(userId);
+
+      if (!userFetched) throw new NotFoundError('User not found!');
+
+      postFetched.likes.unshift(userFetched);
     } else {
       const removeIndex = postFetched.likes
-        .map(({ user }: { user: string }) => user.toString())
+        .map((user) => user.toString())
         .indexOf(userId);
 
       postFetched.likes.splice(removeIndex, 1);

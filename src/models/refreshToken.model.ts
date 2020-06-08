@@ -14,7 +14,7 @@ const RefreshToken = new Schema(
       unique: true,
     },
   },
-  { timestamps: { createdAt: 'created_at' } },
+  { timestamps: true },
 );
 
 export default mongoose.model<RefreshToken>('RefreshToken', RefreshToken);

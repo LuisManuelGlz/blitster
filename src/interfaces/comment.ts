@@ -7,5 +7,10 @@ export interface Comment extends Document {
   content: string;
   likes: User[];
   createdAt: Date;
-  updatedAt: Date;
+}
+
+export interface CommentForCreateDTO {
+  user: User;
+  postId: string;
+  content: string;
 }
