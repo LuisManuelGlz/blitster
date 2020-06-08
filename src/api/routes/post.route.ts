@@ -36,30 +36,38 @@ const route = Router();
 export default (app: Router): void => {
   app.use('/posts', route);
 
-  route.get('/', async (req: Request, res: Response, next: NextFunction) => {
-    const postServiceInstance: PostService = Container.get(PostService);
+  route.get(
+    '/',
+    middlewares.auth,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const postServiceInstance: PostService = Container.get(PostService);
 
-    try {
-      const response: PostForListDTO[] = await postServiceInstance.getPosts();
-      return res.status(200).json(response);
-    } catch (error) {
-      return next(error);
-    }
-  });
+      try {
+        const response: PostForListDTO[] = await postServiceInstance.getPosts();
+        return res.status(200).json(response);
+      } catch (error) {
+        return next(error);
+      }
+    },
+  );
 
-  route.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
-    const postServiceInstance: PostService = Container.get(PostService);
+  route.get(
+    '/:postId',
+    middlewares.auth,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const postServiceInstance: PostService = Container.get(PostService);
 
-    try {
-      const response: PostForDetailDTO = await postServiceInstance.getPost(
-        req.params.id,
-      );
+      try {
+        const response: PostForDetailDTO = await postServiceInstance.getPost(
+          req.params.postId,
+        );
 
-      return res.send(response);
-    } catch (error) {
-      return next(error);
-    }
-  });
+        return res.send(response);
+      } catch (error) {
+        return next(error);
+      }
+    },
+  );
 
   route.post(
     '/',
@@ -85,7 +93,22 @@ export default (app: Router): void => {
           ...req.body,
         };
         await postServiceInstance.createPost(postForCreateDTO);
-        return res.send('ok');
+        return res.status(201).json('Post created!');
+      } catch (error) {
+        return next(error);
+      }
+    },
+  );
+
+  route.delete(
+    '/:postId',
+    middlewares.auth,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const postServiceInstance: PostService = Container.get(PostService);
+
+      try {
+        await postServiceInstance.deletePost(req.params.postId);
+        return res.status(204).end();
       } catch (error) {
         return next(error);
       }

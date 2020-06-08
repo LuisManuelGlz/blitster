@@ -1,5 +1,6 @@
 import { Service, Inject } from 'typedi';
 import 'reflect-metadata';
+import { unlinkSync } from 'fs';
 import {
   Post,
   PostForCreateDTO,
@@ -43,5 +44,18 @@ export default class PostService {
     await this.postModel.create({
       ...postForCreateDTO,
     });
+  }
+
+  async deletePost(postId: string): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/prefer-regexp-exec
+    if (!postId.match(/^[0-9a-fA-F]{24}$/)) {
+      throw new NotFoundError('Post not found!');
+    }
+
+    const postDeleted = await this.postModel.findByIdAndDelete(postId);
+
+    if (!postDeleted) throw new NotFoundError('Post not found!');
+
+    postDeleted.images.map((image: string) => unlinkSync(`.${image}`));
   }
 }
