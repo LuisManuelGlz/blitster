@@ -6,11 +6,9 @@ import multer from 'multer';
 import randtoken from 'rand-token';
 import { body, validationResult } from 'express-validator';
 import PostService from '../../services/post.service';
-import CommentService from '../../services/comment.service';
 import middlewares from '../middlewares/index';
 import { BadRequestError } from '../../helpers/errors';
 import { PostForListDTO, PostForDetailDTO } from '../../interfaces/post';
-import { CommentForDetailDTO } from '../../interfaces/comment';
 
 const storage = multer.diskStorage({
   destination: 'uploads',
@@ -126,123 +124,6 @@ export default (app: Router): void => {
 
       try {
         await postServiceInstance.likePost(req.params.postId, req.userId);
-        return res.status(204).end();
-      } catch (error) {
-        return next(error);
-      }
-    },
-  );
-
-  route.get(
-    '/comment/:commentId',
-    middlewares.auth,
-    async (req: Request, res: Response, next: NextFunction) => {
-      const commentServiceInstance: CommentService = Container.get(
-        CommentService,
-      );
-
-      try {
-        const response: CommentForDetailDTO = await commentServiceInstance.getComment(
-          req.params.commentId,
-        );
-
-        return res.send(response);
-      } catch (error) {
-        return next(error);
-      }
-    },
-  );
-
-  route.post(
-    '/comment-post/:postId',
-    middlewares.auth,
-    body('content', "Ooops! Don't forget to write something...").notEmpty(),
-    async (req: Request, res: Response, next: NextFunction) => {
-      const errors = validationResult(req);
-
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
-      const commentServiceInstance: CommentService = Container.get(
-        CommentService,
-      );
-
-      const commentForCreateDTO = {
-        user: req.userId,
-        postId: req.params.postId,
-        ...req.body,
-      };
-
-      try {
-        await commentServiceInstance.commentPost(commentForCreateDTO);
-        return res.status(201).end();
-      } catch (error) {
-        return next(error);
-      }
-    },
-  );
-
-  route.post(
-    '/comment-comment/:commentId',
-    middlewares.auth,
-    body('content', "Ooops! Don't forget to write something...").notEmpty(),
-    async (req: Request, res: Response, next: NextFunction) => {
-      const errors = validationResult(req);
-
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
-      const commentServiceInstance: CommentService = Container.get(
-        CommentService,
-      );
-
-      const commentForCreateDTO = {
-        user: req.userId,
-        commentId: req.params.commentId,
-        ...req.body,
-      };
-
-      try {
-        await commentServiceInstance.commentComment(commentForCreateDTO);
-        return res.status(201).end();
-      } catch (error) {
-        return next(error);
-      }
-    },
-  );
-
-  route.delete(
-    '/comment/:commentId',
-    middlewares.auth,
-    async (req: Request, res: Response, next: NextFunction) => {
-      const commentServiceInstance: CommentService = Container.get(
-        CommentService,
-      );
-
-      try {
-        await commentServiceInstance.deleteComment(req.params.commentId);
-        return res.status(204).end();
-      } catch (error) {
-        return next(error);
-      }
-    },
-  );
-
-  route.post(
-    '/like-comment/:commentId',
-    middlewares.auth,
-    async (req: Request, res: Response, next: NextFunction) => {
-      const commentServiceInstance: CommentService = Container.get(
-        CommentService,
-      );
-
-      try {
-        await commentServiceInstance.likeComment(
-          req.params.commentId,
-          req.userId,
-        );
         return res.status(204).end();
       } catch (error) {
         return next(error);
