@@ -10,6 +10,15 @@ export interface Comment extends Document {
   createdAt: Date;
 }
 
+export interface CommentForDetailDTO {
+  _id: string;
+  user: User;
+  content: string;
+  likes: User[];
+  comments: Comment[];
+  createdAt: Date;
+}
+
 export interface CommentForCreateDTO {
   user: User;
   content: string;

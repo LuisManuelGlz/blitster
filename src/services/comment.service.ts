@@ -2,6 +2,7 @@ import { Service, Inject } from 'typedi';
 import 'reflect-metadata';
 import { NotFoundError } from '../helpers/errors';
 import {
+  CommentForDetailDTO,
   CommentForCreateDTO,
   CommentPost,
   CommentComment,
@@ -32,6 +33,37 @@ export default class CommentService {
     postFetched.comments.unshift(commentCreated);
 
     await postFetched.save();
+  }
+
+  async getComment(commentId: string): Promise<CommentForDetailDTO> {
+    if (!/^[0-9a-fA-F]{24}$/.exec(commentId)) {
+      throw new NotFoundError('Comment not found!');
+    }
+
+    const commentFetched = await this.commentModel
+      .findById(commentId)
+      .populate('user', ['_id', 'username', 'avatar'])
+      .populate('likes', ['_id', 'username', 'avatar'])
+      .populate({
+        path: 'comments',
+        model: 'Comment',
+        populate: [
+          {
+            path: 'user',
+            model: 'User',
+            select: { _id: 1, username: 1, avatar: 1 },
+          },
+          {
+            path: 'likes',
+            model: 'User',
+            select: { _id: 1, username: 1, avatar: 1 },
+          },
+        ],
+      });
+
+    if (!commentFetched) throw new NotFoundError('Comment not found!');
+
+    return commentFetched;
   }
 
   async commentComment(

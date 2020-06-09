@@ -10,6 +10,7 @@ import CommentService from '../../services/comment.service';
 import middlewares from '../middlewares/index';
 import { BadRequestError } from '../../helpers/errors';
 import { PostForListDTO, PostForDetailDTO } from '../../interfaces/post';
+import { CommentForDetailDTO } from '../../interfaces/comment';
 
 const storage = multer.diskStorage({
   destination: 'uploads',
@@ -126,6 +127,26 @@ export default (app: Router): void => {
       try {
         await postServiceInstance.likePost(req.params.postId, req.userId);
         return res.status(204).end();
+      } catch (error) {
+        return next(error);
+      }
+    },
+  );
+
+  route.get(
+    '/comment/:commentId',
+    middlewares.auth,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const commentServiceInstance: CommentService = Container.get(
+        CommentService,
+      );
+
+      try {
+        const response: CommentForDetailDTO = await commentServiceInstance.getComment(
+          req.params.commentId,
+        );
+
+        return res.send(response);
       } catch (error) {
         return next(error);
       }
