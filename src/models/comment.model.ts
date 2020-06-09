@@ -14,10 +14,8 @@ const Comment = new Schema(
     },
     likes: [
       {
-        user: {
-          type: Schema.Types.ObjectId,
-          ref: 'User',
-        },
+        type: Schema.Types.ObjectId,
+        ref: 'User',
       },
     ],
     comments: [

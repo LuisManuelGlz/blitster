@@ -162,6 +162,36 @@ export default (app: Router): void => {
     },
   );
 
+  route.post(
+    '/comment-comment/:commentId',
+    middlewares.auth,
+    body('content', "Ooops! Don't forget to write something...").notEmpty(),
+    async (req: Request, res: Response, next: NextFunction) => {
+      const errors = validationResult(req);
+
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const commentServiceInstance: CommentService = Container.get(
+        CommentService,
+      );
+
+      const commentForCreateDTO = {
+        user: req.userId,
+        commentId: req.params.commentId,
+        ...req.body,
+      };
+
+      try {
+        await commentServiceInstance.commentComment(commentForCreateDTO);
+        return res.status(201).end();
+      } catch (error) {
+        return next(error);
+      }
+    },
+  );
+
   route.delete(
     '/comment/:commentId',
     middlewares.auth,
@@ -172,6 +202,26 @@ export default (app: Router): void => {
 
       try {
         await commentServiceInstance.deleteComment(req.params.commentId);
+        return res.status(204).end();
+      } catch (error) {
+        return next(error);
+      }
+    },
+  );
+
+  route.post(
+    '/like-comment/:commentId',
+    middlewares.auth,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const commentServiceInstance: CommentService = Container.get(
+        CommentService,
+      );
+
+      try {
+        await commentServiceInstance.likeComment(
+          req.params.commentId,
+          req.userId,
+        );
         return res.status(204).end();
       } catch (error) {
         return next(error);

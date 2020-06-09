@@ -37,9 +37,24 @@ export default class PostService {
 
     const postFetched = await this.postModel
       .findById(postId)
-      .select('-__v')
+      .populate('user', ['_id', 'username', 'avatar'])
       .populate('likes', ['_id', 'username', 'avatar'])
-      .populate('comments', ['-__v']);
+      .populate({
+        path: 'comments',
+        model: 'Comment',
+        populate: [
+          {
+            path: 'user',
+            model: 'User',
+            select: { _id: 1, username: 1, avatar: 1 },
+          },
+          {
+            path: 'likes',
+            model: 'User',
+            select: { _id: 1, username: 1, avatar: 1 },
+          },
+        ],
+      });
 
     if (!postFetched) throw new NotFoundError('Post not found!');
 

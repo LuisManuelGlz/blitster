@@ -6,11 +6,19 @@ export interface Comment extends Document {
   user: User;
   content: string;
   likes: User[];
+  comments: Comment[];
   createdAt: Date;
 }
 
 export interface CommentForCreateDTO {
   user: User;
-  postId: string;
   content: string;
+}
+
+export interface CommentPost {
+  postId: string;
+}
+
+export interface CommentComment {
+  commentId: string;
 }
