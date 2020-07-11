@@ -4,6 +4,10 @@ import ROLES from '../constants/roles';
 
 const User = new Schema(
   {
+    fullName: {
+      type: String,
+      required: true,
+    },
     username: {
       type: String,
       required: true,

@@ -2,8 +2,9 @@ import { Document } from 'mongoose';
 
 export interface User extends Document {
   _id: string;
-  username: string;
+  fullName: string;
   email: string;
+  username: string;
   avatar: string;
   role: string;
   passwordHash: string;
@@ -11,8 +12,9 @@ export interface User extends Document {
 }
 
 export interface UserForRegisterDTO {
-  username: string;
+  fullName: string;
   email: string;
+  username: string;
   password1: string;
   password2: string;
 }
