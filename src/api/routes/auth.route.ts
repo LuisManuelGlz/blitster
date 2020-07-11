@@ -13,15 +13,8 @@ export default (app: Router): void => {
   route.post(
     '/signup',
     [
-      body('username', 'Please write a username')
+      body('fullName', 'Please write your name')
         .trim()
-        .custom(async (value) => {
-          const user = await Container.get<Models.UserModel>(
-            'userModel',
-          ).findOne({ username: value });
-          return user ? Promise.reject() : Promise.resolve();
-        })
-        .withMessage('Username already exists')
         .notEmpty(),
       body('email', "Please write your email, I won't spam you, I promise")
         .normalizeEmail()
@@ -35,6 +28,16 @@ export default (app: Router): void => {
           return user ? Promise.reject() : Promise.resolve();
         })
         .withMessage('Email already exists')
+        .notEmpty(),
+      body('username', 'Please write a username')
+        .trim()
+        .custom(async (value) => {
+          const user = await Container.get<Models.UserModel>(
+            'userModel',
+          ).findOne({ username: value });
+          return user ? Promise.reject() : Promise.resolve();
+        })
+        .withMessage('Username already exists')
         .notEmpty(),
       body('password1', "Don't forget your password")
         .isLength({ min: 8 })
