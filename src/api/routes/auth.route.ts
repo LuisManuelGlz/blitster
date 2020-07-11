@@ -13,6 +13,7 @@ export default (app: Router): void => {
   route.post(
     '/check-email',
     [
+      body('fullName', 'Please write your name').trim().notEmpty(),
       body('email', "Please write your email, I won't spam you, I promise")
         .normalizeEmail()
         .trim()
