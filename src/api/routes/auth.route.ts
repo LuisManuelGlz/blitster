@@ -11,11 +11,37 @@ export default (app: Router): void => {
   app.use('/auth', route);
 
   route.post(
+    '/check-email',
+    [
+      body('email', "Please write your email, I won't spam you, I promise")
+        .normalizeEmail()
+        .trim()
+        .isEmail()
+        .withMessage('Please write a valid email address')
+        .custom(async (value) => {
+          const user = await Container.get<Models.UserModel>(
+            'userModel',
+          ).findOne({ email: value });
+          return user ? Promise.reject() : Promise.resolve();
+        })
+        .withMessage('Email already exists')
+        .notEmpty(),
+    ],
+    (req: Request, res: Response) => {
+      const errors = validationResult(req);
+
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      return res.status(200).end();
+    },
+  );
+
+  route.post(
     '/signup',
     [
-      body('fullName', 'Please write your name')
-        .trim()
-        .notEmpty(),
+      body('fullName', 'Please write your name').trim().notEmpty(),
       body('email', "Please write your email, I won't spam you, I promise")
         .normalizeEmail()
         .trim()
