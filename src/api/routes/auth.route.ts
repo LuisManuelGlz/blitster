@@ -11,6 +11,31 @@ export default (app: Router): void => {
   app.use('/auth', route);
 
   route.post(
+    '/check-username',
+    [
+      body('username', 'Please write a username')
+        .trim()
+        .custom(async (value) => {
+          const user = await Container.get<Models.UserModel>(
+            'userModel',
+          ).findOne({ username: value });
+          return user ? Promise.reject() : Promise.resolve();
+        })
+        .withMessage('Username already exists')
+        .notEmpty(),
+    ],
+    (req: Request, res: Response) => {
+      const errors = validationResult(req);
+
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      return res.status(200).end();
+    },
+  );
+
+  route.post(
     '/check-email',
     [
       body('email', "Please write your email, I won't spam you, I promise")
