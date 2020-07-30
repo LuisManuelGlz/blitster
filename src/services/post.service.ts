@@ -40,8 +40,8 @@ export default class PostService {
 
     const postFetched = await this.postModel
       .findById(postId)
-      .populate('user', ['_id', 'username', 'avatar'])
-      .populate('likes', ['_id', 'username', 'avatar'])
+      .populate('user', ['_id', 'fullName', 'username', 'avatar'])
+      .populate('likes', ['_id', 'fullName', 'username', 'avatar'])
       .populate({
         path: 'comments',
         model: 'Comment',
@@ -49,12 +49,22 @@ export default class PostService {
           {
             path: 'user',
             model: 'User',
-            select: { _id: 1, username: 1, avatar: 1 },
+            select: {
+              _id: 1,
+              fullName: 1,
+              username: 1,
+              avatar: 1,
+            },
           },
           {
             path: 'likes',
             model: 'User',
-            select: { _id: 1, username: 1, avatar: 1 },
+            select: {
+              _id: 1,
+              fullName: 1,
+              username: 1,
+              avatar: 1,
+            },
           },
         ],
       });
