@@ -19,7 +19,8 @@ export default class PostService {
   async getPosts(): Promise<PostForListDTO[]> {
     const postsFetched = await this.postModel
       .find({})
-      .populate('user', ['_id', 'fullName', 'username', 'avatar']);
+      .populate('user', ['_id', 'fullName', 'username', 'avatar'])
+      .sort({ createdAt: 'desc' });
 
     return postsFetched.map((post: Post) => ({
       _id: post._id,
