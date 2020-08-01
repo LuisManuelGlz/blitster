@@ -8,7 +8,7 @@ import { body, validationResult } from 'express-validator';
 import PostService from '../../services/post.service';
 import middlewares from '../middlewares/index';
 import { BadRequestError } from '../../helpers/errors';
-import { PostForListDTO, PostForDetailDTO } from '../../interfaces/post';
+import { PostForListDTO, LikesOfPostDTO } from '../../interfaces/post';
 
 const storage = multer.diskStorage({
   destination: 'uploads',
@@ -45,24 +45,6 @@ export default (app: Router): void => {
       try {
         const response: PostForListDTO[] = await postServiceInstance.getPosts();
         return res.status(200).json(response);
-      } catch (error) {
-        return next(error);
-      }
-    },
-  );
-
-  route.get(
-    '/:postId',
-    middlewares.auth,
-    async (req: Request, res: Response, next: NextFunction) => {
-      const postServiceInstance: PostService = Container.get(PostService);
-
-      try {
-        const response: PostForDetailDTO = await postServiceInstance.getPost(
-          req.params.postId,
-        );
-
-        return res.send(response);
       } catch (error) {
         return next(error);
       }
@@ -125,6 +107,23 @@ export default (app: Router): void => {
       try {
         await postServiceInstance.likePost(req.params.postId, req.userId);
         return res.status(204).end();
+      } catch (error) {
+        return next(error);
+      }
+    },
+  );
+
+  route.get(
+    '/likesOf/:postId',
+    middlewares.auth,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const postServiceInstance: PostService = Container.get(PostService);
+
+      try {
+        const response: LikesOfPostDTO = await postServiceInstance.getLikes(
+          req.params.postId,
+        );
+        return res.status(200).json(response);
       } catch (error) {
         return next(error);
       }

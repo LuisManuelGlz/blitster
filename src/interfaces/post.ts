@@ -22,18 +22,12 @@ export interface PostForListDTO {
   createdAt: Date;
 }
 
-export interface PostForDetailDTO {
-  _id: string;
-  user: User;
-  content: string;
-  images: string[];
-  likes: User[];
-  comments: Comment[];
-  createdAt: Date;
-}
-
 export interface PostForCreateDTO {
   user: User;
   content: string;
   images: string[];
+}
+
+export interface LikesOfPostDTO {
+  likes: User[];
 }

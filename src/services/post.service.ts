@@ -5,7 +5,7 @@ import {
   Post,
   PostForCreateDTO,
   PostForListDTO,
-  PostForDetailDTO,
+  LikesOfPostDTO,
 } from '../interfaces/post';
 import { NotFoundError } from '../helpers/errors';
 
@@ -31,47 +31,6 @@ export default class PostService {
       comments: post.comments.length,
       createdAt: post.createdAt,
     }));
-  }
-
-  async getPost(postId: string): Promise<PostForDetailDTO> {
-    if (!/^[0-9a-fA-F]{24}$/.exec(postId)) {
-      throw new NotFoundError('Post not found!');
-    }
-
-    const postFetched = await this.postModel
-      .findById(postId)
-      .populate('user', ['_id', 'fullName', 'username', 'avatar'])
-      .populate('likes', ['_id', 'fullName', 'username', 'avatar'])
-      .populate({
-        path: 'comments',
-        model: 'Comment',
-        populate: [
-          {
-            path: 'user',
-            model: 'User',
-            select: {
-              _id: 1,
-              fullName: 1,
-              username: 1,
-              avatar: 1,
-            },
-          },
-          {
-            path: 'likes',
-            model: 'User',
-            select: {
-              _id: 1,
-              fullName: 1,
-              username: 1,
-              avatar: 1,
-            },
-          },
-        ],
-      });
-
-    if (!postFetched) throw new NotFoundError('Post not found!');
-
-    return postFetched;
   }
 
   async createPost(postForCreateDTO: PostForCreateDTO): Promise<void> {
@@ -119,5 +78,26 @@ export default class PostService {
     }
 
     await postFetched.save();
+  }
+
+  async getLikes(postId: string): Promise<LikesOfPostDTO> {
+    const postFetched = await this.postModel
+      .findById(postId)
+      .select('likes')
+      .populate({
+        path: 'likes',
+        model: 'User',
+        select: {
+          _id: 1,
+          fullName: 1,
+          username: 1,
+          avatar: 1,
+        },
+      })
+      .sort({ createdAt: 'desc' });
+
+    if (!postFetched) throw new NotFoundError('Post not found!');
+
+    return postFetched;
   }
 }
