@@ -43,7 +43,9 @@ export default (app: Router): void => {
       const postServiceInstance: PostService = Container.get(PostService);
 
       try {
-        const response: PostForListDTO[] = await postServiceInstance.getPosts();
+        const response: PostForListDTO[] = await postServiceInstance.getPosts(
+          req.userId,
+        );
         return res.status(200).json(response);
       } catch (error) {
         return next(error);

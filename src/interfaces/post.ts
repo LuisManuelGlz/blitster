@@ -19,6 +19,7 @@ export interface PostForListDTO {
   images: string[];
   likes: number;
   comments: number;
+  liked: boolean;
   createdAt: Date;
 }
 

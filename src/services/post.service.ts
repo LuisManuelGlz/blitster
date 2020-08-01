@@ -8,6 +8,7 @@ import {
   LikesOfPostDTO,
 } from '../interfaces/post';
 import { NotFoundError } from '../helpers/errors';
+import { User } from '../interfaces/user';
 
 @Service()
 export default class PostService {
@@ -16,7 +17,7 @@ export default class PostService {
     @Inject('userModel') private userModel: Models.UserModel,
   ) {}
 
-  async getPosts(): Promise<PostForListDTO[]> {
+  async getPosts(userId: string): Promise<PostForListDTO[]> {
     const postsFetched = await this.postModel
       .find({})
       .populate('user', ['_id', 'fullName', 'username', 'avatar'])
@@ -29,6 +30,12 @@ export default class PostService {
       images: post.images,
       likes: post.likes.length,
       comments: post.comments.length,
+      // Check if post has been liked by the current user
+      liked: post.likes.some((user: User) => {
+        // Check if user exist for prevent error
+        if (!user) return false;
+        return user._id == userId;
+      }),
       createdAt: post.createdAt,
     }));
   }

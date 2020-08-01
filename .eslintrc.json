@@ -17,6 +17,7 @@
     "no-console": "off",
     "@typescript-eslint/no-unused-vars": "warn",
     "no-underscore-dangle": "off",
-    "class-methods-use-this": "off"
+    "class-methods-use-this": "off",
+    "eqeqeq": "off"
   }
 }
