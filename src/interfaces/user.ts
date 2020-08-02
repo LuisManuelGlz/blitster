@@ -23,3 +23,17 @@ export interface UserForLoginDTO {
   username: string;
   password: string;
 }
+
+export interface UserForListDTO {
+  _id: string;
+  fullName: string;
+  username: string;
+  avatar: string;
+}
+
+export interface UserForDetailDTO {
+  _id: string;
+  fullName: string;
+  username: string;
+  avatar: string;
+}
