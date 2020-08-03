@@ -84,7 +84,14 @@ export default class PostService {
       postFetched.likes.splice(removeIndex, 1);
     }
 
-    const post = await postFetched.save();
+    const post = await postFetched.save().then(
+      (postSaved) =>
+        // eslint-disable-next-line implicit-arrow-linebreak
+        postSaved
+          .populate('user', '_id fullName username avatar')
+          .execPopulate(),
+      // eslint-disable-next-line function-paren-newline
+    );
 
     return {
       _id: post._id,
