@@ -58,7 +58,7 @@ export default class PostService {
     postDeleted.images.map((image: string) => unlinkSync(`.${image}`));
   }
 
-  async likePost(postId: string, userId: string): Promise<void> {
+  async likePost(postId: string, userId: string): Promise<PostForListDTO> {
     if (!/^[0-9a-fA-F]{24}$/.exec(postId)) {
       throw new NotFoundError('Post not found!');
     }
@@ -84,7 +84,23 @@ export default class PostService {
       postFetched.likes.splice(removeIndex, 1);
     }
 
-    await postFetched.save();
+    const post = await postFetched.save();
+
+    return {
+      _id: post._id,
+      user: post.user,
+      content: post.content,
+      images: post.images,
+      likes: post.likes.length,
+      comments: post.comments.length,
+      // Check if post has been liked by the current user
+      liked: post.likes.some((user: User) => {
+        // Check if user exist for prevent error
+        if (!user) return false;
+        return user._id == userId;
+      }),
+      createdAt: post.createdAt,
+    };
   }
 
   async getLikes(postId: string): Promise<LikesOfPostDTO> {

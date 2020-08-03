@@ -107,8 +107,11 @@ export default (app: Router): void => {
       const postServiceInstance: PostService = Container.get(PostService);
 
       try {
-        await postServiceInstance.likePost(req.params.postId, req.userId);
-        return res.status(204).end();
+        const post = await postServiceInstance.likePost(
+          req.params.postId,
+          req.userId,
+        );
+        return res.status(204).json(post);
       } catch (error) {
         return next(error);
       }
