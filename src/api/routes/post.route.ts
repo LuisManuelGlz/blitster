@@ -111,7 +111,7 @@ export default (app: Router): void => {
           req.params.postId,
           req.userId,
         );
-        return res.status(204).json(post);
+        return res.status(200).json(post);
       } catch (error) {
         return next(error);
       }
