@@ -134,4 +134,21 @@ export default (app: Router): void => {
       }
     },
   );
+
+  route.get(
+    '/of/:userId',
+    middlewares.auth,
+    async (req: Request, res: Response, next: NextFunction) => {
+      const postServiceInstance: PostService = Container.get(PostService);
+
+      try {
+        const response: PostForListDTO[] = await postServiceInstance.getPostsOf(
+          req.params.userId,
+        );
+        return res.status(200).json(response);
+      } catch (error) {
+        return next(error);
+      }
+    },
+  );
 };
