@@ -137,25 +137,26 @@ export default class PostService {
     }
 
     const postsFetched = await this.postModel
-      .find({ user: userId })
-      // .find({ 'user._id': userId })
+      .find()
       .populate('user', ['_id', 'fullName', 'username', 'avatar'])
       .sort({ createdAt: 'desc' });
 
-    return postsFetched.map((post: Post) => ({
-      _id: post._id,
-      user: post.user,
-      content: post.content,
-      images: post.images,
-      likes: post.likes.length,
-      comments: post.comments.length,
-      // Check if post has been liked by the current user
-      liked: post.likes.some((user: User) => {
-        // Check if user exist for prevent error
-        if (!user) return false;
-        return user._id == userId;
-      }),
-      createdAt: post.createdAt,
-    }));
+    return postsFetched
+      .filter((post) => post.user._id == userId)
+      .map((post: Post) => ({
+        _id: post._id,
+        user: post.user,
+        content: post.content,
+        images: post.images,
+        likes: post.likes.length,
+        comments: post.comments.length,
+        // Check if post has been liked by the current user
+        liked: post.likes.some((user: User) => {
+          // Check if user exist for prevent error
+          if (!user) return false;
+          return user._id == userId;
+        }),
+        createdAt: post.createdAt,
+      }));
   }
 }
