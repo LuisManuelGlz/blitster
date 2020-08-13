@@ -54,11 +54,9 @@ export default class UserService {
     userUsername: string,
     userEmail: string,
     accountForUpdateDTO: AccountForUpdateDTO,
-  ): Promise<UserForDetailDTO> {
+  ): Promise<void> {
     const { newEmail, newFullName, newUsername } = accountForUpdateDTO;
 
-    console.log(userUsername);
-    console.log(newUsername);
     if (userUsername !== newUsername) {
       const user = await this.userModel.findOne({ username: newUsername });
       if (user) throw new BadRequestError('Username already exists');
@@ -74,13 +72,5 @@ export default class UserService {
       username: newUsername,
       email: newEmail,
     });
-
-    const userFetched = await this.userModel
-      .findById(userId)
-      .select('_id fullName username avatar');
-
-    if (!userFetched) throw new NotFoundError('User not found!');
-
-    return userFetched;
   }
 }

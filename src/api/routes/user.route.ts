@@ -85,14 +85,16 @@ export default (app: Router): void => {
       const userServiceInstance: UserService = Container.get(UserService);
 
       try {
-        const response = await userServiceInstance.updateAccount(
+        await userServiceInstance.updateAccount(
           req.userId,
           req.userUsername,
           req.userEmail,
           req.body,
         );
 
-        return res.status(201).json(response);
+        return res
+          .status(201)
+          .json({ message: 'Your account has been updated successfully!' });
       } catch (error) {
         return next(error);
       }
