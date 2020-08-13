@@ -1,7 +1,12 @@
 import { Service, Inject } from 'typedi';
 import 'reflect-metadata';
-import { User, UserForListDTO, UserForDetailDTO } from '../interfaces/user';
-import { NotFoundError } from '../helpers/errors';
+import {
+  User,
+  UserForListDTO,
+  UserForDetailDTO,
+  AccountForUpdateDTO,
+} from '../interfaces/user';
+import { NotFoundError, BadRequestError } from '../helpers/errors';
 
 @Service()
 export default class UserService {
@@ -42,5 +47,30 @@ export default class UserService {
     if (!userFetched) throw new NotFoundError('User not found!');
 
     return userFetched;
+  }
+
+  async updateAccount(
+    userId: string,
+    userUsername: string,
+    userEmail: string,
+    accountForUpdateDTO: AccountForUpdateDTO,
+  ): Promise<void> {
+    const { newEmail, newFullName, newUsername } = accountForUpdateDTO;
+
+    if (userUsername !== newUsername) {
+      const user = await this.userModel.findOne({ username: newUsername });
+      if (user) throw new BadRequestError('Username already exists');
+    }
+
+    if (userEmail !== newEmail) {
+      const user = await this.userModel.findOne({ email: newEmail });
+      if (user) throw new BadRequestError('Email already exists');
+    }
+
+    await this.userModel.findByIdAndUpdate(userId, {
+      fullName: newFullName,
+      username: newUsername,
+      email: newEmail,
+    });
   }
 }

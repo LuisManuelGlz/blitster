@@ -37,3 +37,9 @@ export interface UserForDetailDTO {
   username: string;
   avatar: string;
 }
+
+export interface AccountForUpdateDTO {
+  newEmail: string;
+  newFullName: string;
+  newUsername: string;
+}

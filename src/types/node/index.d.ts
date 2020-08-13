@@ -26,6 +26,8 @@ declare global {
   namespace Express {
     export interface Request {
       userId: string;
+      userUsername: string;
+      userEmail: string;
     }
   }
 
