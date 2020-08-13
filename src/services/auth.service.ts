@@ -45,14 +45,8 @@ export default class AuthService {
     this.mailerService.SendEmail(userCreated.email, verificationToken);
     const user = userCreated.toObject();
     Reflect.deleteProperty(user, 'passwordHash');
-    const payload = {
-      _id: user._id,
-      username: user.username,
-      email: user.email,
-      role: user.role,
-      isVerified: user.isVerified,
-    };
-    const accessToken = this.jwtServiceToken.generateAccessToken(payload);
+
+    const accessToken = this.jwtServiceToken.generateAccessToken(user);
     const refreshToken = this.jwtServiceToken.generateRefreshToken();
 
     await this.refreshTokenModel.create({
@@ -85,14 +79,7 @@ export default class AuthService {
 
     Reflect.deleteProperty(user, 'passwordHash');
 
-    const payload = {
-      _id: user._id,
-      username: user.username,
-      email: user.email,
-      role: user.role,
-      isVerified: user.isVerified,
-    };
-    const accessToken = this.jwtServiceToken.generateAccessToken(payload);
+    const accessToken = this.jwtServiceToken.generateAccessToken(user);
     const refreshToken = this.jwtServiceToken.generateRefreshToken();
 
     await this.refreshTokenModel.create({
@@ -139,14 +126,7 @@ export default class AuthService {
 
       if (!userFetched) throw new NotFoundError('User not found!');
 
-      const payload = {
-        _id: userFetched._id,
-        username: userFetched.username,
-        email: userFetched.email,
-        role: userFetched.role,
-        isVerified: userFetched.isVerified,
-      };
-      const accessToken = this.jwtServiceToken.generateAccessToken(payload);
+      const accessToken = this.jwtServiceToken.generateAccessToken(userFetched);
 
       await this.refreshTokenModel.findByIdAndUpdate(refreshTokenFetched._id, {
         refreshToken: accessToken,
