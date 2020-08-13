@@ -88,6 +88,7 @@ export default class AuthService {
     const payload = {
       _id: user._id,
       username: user.username,
+      email: user.email,
       role: user.role,
       isVerified: user.isVerified,
     };
@@ -141,6 +142,7 @@ export default class AuthService {
       const payload = {
         _id: userFetched._id,
         username: userFetched.username,
+        email: userFetched.email,
         role: userFetched.role,
         isVerified: userFetched.isVerified,
       };

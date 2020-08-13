@@ -51,18 +51,36 @@ export default class UserService {
 
   async updateAccount(
     userId: string,
+    userUsername: string,
+    userEmail: string,
     accountForUpdateDTO: AccountForUpdateDTO,
   ): Promise<UserForDetailDTO> {
     const { newEmail, newFullName, newUsername } = accountForUpdateDTO;
 
-    const userUpdated = await this.userModel.findByIdAndUpdate(userId, {
+    console.log(userUsername);
+    console.log(newUsername);
+    if (userUsername !== newUsername) {
+      const user = await this.userModel.findOne({ username: newUsername });
+      if (user) throw new BadRequestError('Username already exists');
+    }
+
+    if (userEmail !== newEmail) {
+      const user = await this.userModel.findOne({ email: newEmail });
+      if (user) throw new BadRequestError('Email already exists');
+    }
+
+    await this.userModel.findByIdAndUpdate(userId, {
       fullName: newFullName,
-      userame: newUsername,
+      username: newUsername,
       email: newEmail,
     });
 
-    if (!userUpdated) throw new NotFoundError('User not found!');
+    const userFetched = await this.userModel
+      .findById(userId)
+      .select('_id fullName username avatar');
 
-    return userUpdated;
+    if (!userFetched) throw new NotFoundError('User not found!');
+
+    return userFetched;
   }
 }

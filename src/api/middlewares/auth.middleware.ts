@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import { Request, Response, NextFunction } from 'express';
 import { Container } from 'typedi';
 import config from '../../config';
@@ -12,8 +13,9 @@ export default (req: Request, res: Response, next: NextFunction): void => {
 
   if (token?.split(' ')[0] === config.tokenType) {
     const decoded = Container.get(JwtService).verifyToken(token?.split(' ')[1]);
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     req.userId = (decoded as DecoredToken)._id;
+    req.userUsername = (decoded as DecoredToken).username;
+    req.userEmail = (decoded as DecoredToken).email;
     return next();
   }
 
