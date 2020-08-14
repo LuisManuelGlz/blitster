@@ -21,7 +21,6 @@ export default class UserService {
       _id: user._id,
       fullName: user.fullName,
       username: user.username,
-      avatar: user.avatar,
     }));
   }
 
@@ -32,17 +31,7 @@ export default class UserService {
 
     const userFetched = await this.userModel
       .findById(userId)
-      .select('_id fullName username avatar');
-
-    if (!userFetched) throw new NotFoundError('User not found!');
-
-    return userFetched;
-  }
-
-  async getProfile(userId: string): Promise<UserForDetailDTO> {
-    const userFetched = await this.userModel
-      .findById(userId)
-      .select('_id fullName username avatar email');
+      .select('_id fullName username');
 
     if (!userFetched) throw new NotFoundError('User not found!');
 

@@ -20,7 +20,7 @@ export default class PostService {
   async getPosts(userId: string): Promise<PostForListDTO[]> {
     const postsFetched = await this.postModel
       .find({})
-      .populate('user', ['_id', 'fullName', 'username', 'avatar'])
+      .populate('user', ['_id', 'fullName', 'username'])
       .sort({ createdAt: 'desc' });
 
     return postsFetched.map((post: Post) => ({
@@ -87,9 +87,7 @@ export default class PostService {
     const post = await postFetched.save().then(
       (postSaved) =>
         // eslint-disable-next-line implicit-arrow-linebreak
-        postSaved
-          .populate('user', '_id fullName username avatar')
-          .execPopulate(),
+        postSaved.populate('user', '_id fullName username').execPopulate(),
       // eslint-disable-next-line function-paren-newline
     );
 
@@ -121,7 +119,6 @@ export default class PostService {
           _id: 1,
           fullName: 1,
           username: 1,
-          avatar: 1,
         },
       })
       .sort({ createdAt: 'desc' });
@@ -138,7 +135,7 @@ export default class PostService {
 
     const postsFetched = await this.postModel
       .find()
-      .populate('user', ['_id', 'fullName', 'username', 'avatar'])
+      .populate('user', ['_id', 'fullName', 'username'])
       .sort({ createdAt: 'desc' });
 
     return postsFetched

@@ -20,6 +20,7 @@ export default class AuthService {
 
   constructor(
     @Inject('userModel') private userModel: Models.UserModel,
+    @Inject('profileModel') private profileModel: Models.ProfileModel,
     @Inject('tokenModel') private tokenModel: Models.TokenModel,
     @Inject('refreshTokenModel')
     private refreshTokenModel: Models.RefreshTokenModel,
@@ -36,6 +37,7 @@ export default class AuthService {
       ...userForRegisterDTO,
       passwordHash,
     });
+    await this.profileModel.create({ user: userCreated._id });
     const verificationToken = randtoken.uid(32);
 
     await this.tokenModel.create({
@@ -95,7 +97,7 @@ export default class AuthService {
     };
   }
 
-  async vefiryEmail(verificationToken: string): Promise<void> {
+  async verifyEmail(verificationToken: string): Promise<void> {
     const verificationTokenFetched = await this.tokenModel.findOne({
       verificationToken,
     });

@@ -3,7 +3,6 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { param, body, validationResult } from 'express-validator';
 import { Container } from 'typedi';
 import AuthService from '../../services/auth.service';
-import { TokenOutput } from '../../interfaces/refreshToken';
 
 const route = Router();
 
@@ -106,12 +105,10 @@ export default (app: Router): void => {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const authServiceInstance: AuthService = Container.get(AuthService);
+      const authServiceInstance = Container.get(AuthService);
 
       try {
-        const response: TokenOutput = await authServiceInstance.signUp(
-          req.body,
-        );
+        const response = await authServiceInstance.signUp(req.body);
 
         return res.status(201).json(response);
       } catch (error) {
@@ -133,10 +130,10 @@ export default (app: Router): void => {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const authServiceInstance: AuthService = Container.get(AuthService);
+      const authServiceInstance = Container.get(AuthService);
 
       try {
-        const response: TokenOutput = await authServiceInstance.login(req.body);
+        const response = await authServiceInstance.login(req.body);
         return res.status(200).json(response);
       } catch (error) {
         return next(error);
@@ -147,7 +144,7 @@ export default (app: Router): void => {
   route.post(
     '/refresh',
     [
-      body('userId', 'User id is requiered').trim().notEmpty(),
+      body('userId', 'User id is required').trim().notEmpty(),
       body('refreshToken', 'Refresh token is required').trim().notEmpty(),
     ],
     async (req: Request, res: Response, next: NextFunction) => {
@@ -157,12 +154,10 @@ export default (app: Router): void => {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const authServiceInstance: AuthService = Container.get(AuthService);
+      const authServiceInstance = Container.get(AuthService);
 
       try {
-        const response: TokenOutput = await authServiceInstance.refresh(
-          req.body,
-        );
+        const response = await authServiceInstance.refresh(req.body);
 
         return res.status(200).json(response);
       } catch (error) {
@@ -181,7 +176,7 @@ export default (app: Router): void => {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const authServiceInstance: AuthService = Container.get(AuthService);
+      const authServiceInstance = Container.get(AuthService);
 
       try {
         await authServiceInstance.revoke(req.body.refreshToken);
@@ -202,10 +197,10 @@ export default (app: Router): void => {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const authServiceInstance: AuthService = Container.get(AuthService);
+      const authServiceInstance = Container.get(AuthService);
 
       try {
-        await authServiceInstance.vefiryEmail(req.params.verificationToken);
+        await authServiceInstance.verifyEmail(req.params.verificationToken);
         return res
           .status(200)
           .json({ message: 'Great! Your email has been verified' });

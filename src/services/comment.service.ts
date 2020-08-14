@@ -42,8 +42,8 @@ export default class CommentService {
 
     const commentFetched = await this.commentModel
       .findById(commentId)
-      .populate('user', ['_id', 'username', 'avatar'])
-      .populate('likes', ['_id', 'username', 'avatar'])
+      .populate('user', ['_id', 'username'])
+      .populate('likes', ['_id', 'username'])
       .populate({
         path: 'comments',
         model: 'Comment',
@@ -51,12 +51,12 @@ export default class CommentService {
           {
             path: 'user',
             model: 'User',
-            select: { _id: 1, username: 1, avatar: 1 },
+            select: { _id: 1, username: 1 },
           },
           {
             path: 'likes',
             model: 'User',
-            select: { _id: 1, username: 1, avatar: 1 },
+            select: { _id: 1, username: 1 },
           },
         ],
       });

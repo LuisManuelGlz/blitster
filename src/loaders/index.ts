@@ -7,6 +7,7 @@ import TokenModel from '../models/token.model';
 import RefreshTokenModel from '../models/refreshToken.model';
 import PostModel from '../models/post.model';
 import CommentModel from '../models/comment.model';
+import ProfileModel from '../models/profile.model';
 
 export default async ({
   expressApp,
@@ -36,9 +37,20 @@ export default async ({
     name: 'commentModel',
     model: CommentModel,
   };
+  const profileModel = {
+    name: 'profileModel',
+    model: ProfileModel,
+  };
 
   dependencyInjectorLoader({
-    models: [userModel, tokenModel, refreshTokenModel, postModel, commentModel],
+    models: [
+      userModel,
+      tokenModel,
+      refreshTokenModel,
+      postModel,
+      commentModel,
+      profileModel,
+    ],
   });
   console.log('Dependency Injector loaded');
 
