@@ -26,6 +26,11 @@ const User = new Schema(
       type: String,
       default: ROLES.User,
     },
+    avatar: {
+      type: String,
+      default:
+        'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
+    },
     isVerified: {
       type: Boolean,
       default: false,

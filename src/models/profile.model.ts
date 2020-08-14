@@ -3,11 +3,6 @@ import { Profile } from '../interfaces/profile';
 
 const Profile = new Schema(
   {
-    avatar: {
-      type: String,
-      default:
-        'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
-    },
     bio: {
       type: String,
     },

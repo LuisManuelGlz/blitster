@@ -13,7 +13,7 @@ export default class ProfileService {
     console.log(userId);
     const profileFetched = await this.profileModel
       .findOne({ user: userId })
-      .populate('user', '_id username fullName email');
+      .populate('user', '_id username fullName avatar email');
 
     if (!profileFetched) throw new NotFoundError('Profile not found!');
 
@@ -27,7 +27,7 @@ export default class ProfileService {
 
     const userFetched = await this.profileModel
       .findById(userId)
-      .populate('user', '_id fullName username');
+      .populate('user', '_id fullName username avatar');
 
     if (!userFetched) throw new NotFoundError('Profile not found!');
 

@@ -35,6 +35,12 @@ const route = Router();
 export default (app: Router): void => {
   app.use('/posts', route);
 
+  /**
+   * GET posts
+   * @description Get all posts
+   * @response 200 - OK
+   */
+
   route.get(
     '/',
     middlewares.auth,
@@ -49,6 +55,12 @@ export default (app: Router): void => {
       }
     },
   );
+
+  /**
+   * POST posts
+   * @description Create a post
+   * @response 201 - Created
+   */
 
   route.post(
     '/',
@@ -82,6 +94,13 @@ export default (app: Router): void => {
     },
   );
 
+  /**
+   * DELETE posts/{postId}
+   * @description Delete a post
+   * @pathParam {string} postId - ID of post
+   * @response 204 - No Content
+   */
+
   route.delete(
     '/:postId',
     middlewares.auth,
@@ -96,6 +115,13 @@ export default (app: Router): void => {
       }
     },
   );
+
+  /**
+   * POST posts/like/{postId}
+   * @description Returns the post liked
+   * @pathParam {string} postId - ID of post
+   * @response 200 - OK
+   */
 
   route.post(
     '/like/:postId',
@@ -115,6 +141,13 @@ export default (app: Router): void => {
     },
   );
 
+  /**
+   * GET posts/likesOf/{postId}
+   * @description Returns people who likes the post
+   * @pathParam {string} postId - ID of post
+   * @response 200 - OK
+   */
+
   route.get(
     '/likesOf/:postId',
     middlewares.auth,
@@ -129,6 +162,13 @@ export default (app: Router): void => {
       }
     },
   );
+
+  /**
+   * GET posts/of/{userId}
+   * @description Returns posts of a user
+   * @pathParam {string} userId - ID of user
+   * @response 200 - OK
+   */
 
   route.get(
     '/of/:userId',
