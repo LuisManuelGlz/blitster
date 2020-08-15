@@ -18,11 +18,6 @@ const User = new Schema(
       required: true,
       unique: true,
     },
-    avatar: {
-      type: String,
-      default:
-        'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
-    },
     passwordHash: {
       type: String,
       required: true,
@@ -30,6 +25,11 @@ const User = new Schema(
     role: {
       type: String,
       default: ROLES.User,
+    },
+    avatar: {
+      type: String,
+      default:
+        'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
     },
     isVerified: {
       type: Boolean,

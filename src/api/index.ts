@@ -3,6 +3,8 @@ import auth from './routes/auth.route';
 import posts from './routes/post.route';
 import comment from './routes/comment.route';
 import user from './routes/user.route';
+import profile from './routes/profile.route';
+import follow from './routes/follow.route';
 
 export default (): Router => {
   const app = Router();
@@ -11,6 +13,8 @@ export default (): Router => {
   posts(app);
   comment(app);
   user(app);
+  profile(app);
+  follow(app);
 
   return app;
 };

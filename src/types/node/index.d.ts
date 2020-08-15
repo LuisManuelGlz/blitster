@@ -5,6 +5,7 @@ import { Token } from '../../interfaces/token';
 import { RefreshToken } from '../../interfaces/refreshToken';
 import { Post } from '../../interfaces/post';
 import { Comment } from '../../interfaces/comment';
+import { Profile } from '../../interfaces/profile';
 
 declare global {
   namespace NodeJS {
@@ -37,5 +38,6 @@ declare global {
     export type RefreshTokenModel = Model<RefreshToken>;
     export type PostModel = Model<Post>;
     export type CommentModel = Model<Comment>;
+    export type ProfileModel = Model<Profile>;
   }
 }

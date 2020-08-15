@@ -3,12 +3,17 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { param, body, validationResult } from 'express-validator';
 import { Container } from 'typedi';
 import AuthService from '../../services/auth.service';
-import { TokenOutput } from '../../interfaces/refreshToken';
 
 const route = Router();
 
 export default (app: Router): void => {
   app.use('/auth', route);
+
+  /**
+   * POST auth/check-username
+   * @description Check if username already exists
+   * @response 204 - No Content
+   */
 
   route.post(
     '/check-username',
@@ -31,9 +36,15 @@ export default (app: Router): void => {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      return res.status(200).end();
+      return res.status(204).end();
     },
   );
+
+  /**
+   * POST auth/check-email
+   * @description Check if email already exists
+   * @response 204 - No Content
+   */
 
   route.post(
     '/check-email',
@@ -59,9 +70,15 @@ export default (app: Router): void => {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      return res.status(200).end();
+      return res.status(204).end();
     },
   );
+
+  /**
+   * POST auth/signup
+   * @description Register an user
+   * @response 201 - Created
+   */
 
   route.post(
     '/signup',
@@ -106,12 +123,10 @@ export default (app: Router): void => {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const authServiceInstance: AuthService = Container.get(AuthService);
+      const authServiceInstance = Container.get(AuthService);
 
       try {
-        const response: TokenOutput = await authServiceInstance.signUp(
-          req.body,
-        );
+        const response = await authServiceInstance.signUp(req.body);
 
         return res.status(201).json(response);
       } catch (error) {
@@ -119,6 +134,12 @@ export default (app: Router): void => {
       }
     },
   );
+
+  /**
+   * POST auth/login
+   * @description Log in an user
+   * @response 200 - OK
+   */
 
   route.post(
     '/login',
@@ -133,10 +154,10 @@ export default (app: Router): void => {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const authServiceInstance: AuthService = Container.get(AuthService);
+      const authServiceInstance = Container.get(AuthService);
 
       try {
-        const response: TokenOutput = await authServiceInstance.login(req.body);
+        const response = await authServiceInstance.login(req.body);
         return res.status(200).json(response);
       } catch (error) {
         return next(error);
@@ -144,10 +165,16 @@ export default (app: Router): void => {
     },
   );
 
+  /**
+   * POST auth/refresh
+   * @description Refresh a token
+   * @response 200 - OK
+   */
+
   route.post(
     '/refresh',
     [
-      body('userId', 'User id is requiered').trim().notEmpty(),
+      body('userId', 'User id is required').trim().notEmpty(),
       body('refreshToken', 'Refresh token is required').trim().notEmpty(),
     ],
     async (req: Request, res: Response, next: NextFunction) => {
@@ -157,12 +184,10 @@ export default (app: Router): void => {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const authServiceInstance: AuthService = Container.get(AuthService);
+      const authServiceInstance = Container.get(AuthService);
 
       try {
-        const response: TokenOutput = await authServiceInstance.refresh(
-          req.body,
-        );
+        const response = await authServiceInstance.refresh(req.body);
 
         return res.status(200).json(response);
       } catch (error) {
@@ -170,6 +195,12 @@ export default (app: Router): void => {
       }
     },
   );
+
+  /**
+   * POST auth/revoke
+   * @description Revoke a token
+   * @response 204 - No Content
+   */
 
   route.post(
     '/revoke',
@@ -181,7 +212,7 @@ export default (app: Router): void => {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const authServiceInstance: AuthService = Container.get(AuthService);
+      const authServiceInstance = Container.get(AuthService);
 
       try {
         await authServiceInstance.revoke(req.body.refreshToken);
@@ -191,6 +222,13 @@ export default (app: Router): void => {
       }
     },
   );
+
+  /**
+   * GET auth/verify-email/{verificationToken}
+   * @description Verify an user email
+   * @pathParam {string} verificationToken - Verification token
+   * @response 200 - OK
+   */
 
   route.get(
     '/verify-email/:verificationToken',
@@ -202,10 +240,10 @@ export default (app: Router): void => {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const authServiceInstance: AuthService = Container.get(AuthService);
+      const authServiceInstance = Container.get(AuthService);
 
       try {
-        await authServiceInstance.vefiryEmail(req.params.verificationToken);
+        await authServiceInstance.verifyEmail(req.params.verificationToken);
         return res
           .status(200)
           .json({ message: 'Great! Your email has been verified' });

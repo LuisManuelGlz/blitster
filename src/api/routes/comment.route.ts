@@ -4,23 +4,27 @@ import Container from 'typedi';
 import { body, validationResult } from 'express-validator';
 import CommentService from '../../services/comment.service';
 import middlewares from '../middlewares/index';
-import { CommentForDetailDTO } from '../../interfaces/comment';
 
 const route = Router();
 
 export default (app: Router): void => {
-  app.use('/comment', route);
+  app.use('/comments', route);
+
+  /**
+   * GET comments/{commentId}
+   * @description Get a comment
+   * @pathParam {string} commentId - ID of comment
+   * @response 200 - OK
+   */
 
   route.get(
     '/:commentId',
     middlewares.auth,
     async (req: Request, res: Response, next: NextFunction) => {
-      const commentServiceInstance: CommentService = Container.get(
-        CommentService,
-      );
+      const commentServiceInstance = Container.get(CommentService);
 
       try {
-        const response: CommentForDetailDTO = await commentServiceInstance.getComment(
+        const response = await commentServiceInstance.getComment(
           req.params.commentId,
         );
 
@@ -30,6 +34,13 @@ export default (app: Router): void => {
       }
     },
   );
+
+  /**
+   * POST comments/comment-post/{postId}
+   * @description Create a comment in a post
+   * @pathParam {string} postId - ID of post
+   * @response 201 - Created
+   */
 
   route.post(
     '/comment-post/:postId',
@@ -42,9 +53,7 @@ export default (app: Router): void => {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const commentServiceInstance: CommentService = Container.get(
-        CommentService,
-      );
+      const commentServiceInstance = Container.get(CommentService);
 
       const commentForCreateDTO = {
         user: req.userId,
@@ -61,6 +70,13 @@ export default (app: Router): void => {
     },
   );
 
+  /**
+   * POST comments/comment-comment/{commentId}
+   * @description Create a comment in a comment
+   * @pathParam {string} commentId - ID of comment
+   * @response 201 - Created
+   */
+
   route.post(
     '/comment-comment/:commentId',
     middlewares.auth,
@@ -72,9 +88,7 @@ export default (app: Router): void => {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const commentServiceInstance: CommentService = Container.get(
-        CommentService,
-      );
+      const commentServiceInstance = Container.get(CommentService);
 
       const commentForCreateDTO = {
         user: req.userId,
@@ -91,13 +105,18 @@ export default (app: Router): void => {
     },
   );
 
+  /**
+   * DELETE comments/{commentId}
+   * @description Delete a comment
+   * @pathParam {string} commentId - ID of comment
+   * @response 204 - No Content
+   */
+
   route.delete(
     '/:commentId',
     middlewares.auth,
     async (req: Request, res: Response, next: NextFunction) => {
-      const commentServiceInstance: CommentService = Container.get(
-        CommentService,
-      );
+      const commentServiceInstance = Container.get(CommentService);
 
       try {
         await commentServiceInstance.deleteComment(req.params.commentId);
@@ -108,13 +127,18 @@ export default (app: Router): void => {
     },
   );
 
+  /**
+   * POST comments/like/{commentId}
+   * @description Like a comment
+   * @pathParam {string} commentId - ID of comment
+   * @response 204 - No Content
+   */
+
   route.post(
     '/like/:commentId',
     middlewares.auth,
     async (req: Request, res: Response, next: NextFunction) => {
-      const commentServiceInstance: CommentService = Container.get(
-        CommentService,
-      );
+      const commentServiceInstance = Container.get(CommentService);
 
       try {
         await commentServiceInstance.likeComment(

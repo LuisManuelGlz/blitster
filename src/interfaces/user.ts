@@ -5,9 +5,9 @@ export interface User extends Document {
   fullName: string;
   email: string;
   username: string;
-  avatar: string;
   role: string;
   passwordHash: string;
+  avatar: string;
   isVerified: boolean;
 }
 

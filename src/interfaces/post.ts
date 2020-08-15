@@ -1,10 +1,10 @@
-import { Document } from 'mongoose';
-import { User } from './user';
+import { Document, Types } from 'mongoose';
 import { Comment } from './comment';
+import { User } from './user';
 
 export interface Post extends Document {
   _id: string;
-  user: User;
+  user: Types.ObjectId;
   content: string;
   images: string[];
   likes: User[];
@@ -14,7 +14,7 @@ export interface Post extends Document {
 
 export interface PostForListDTO {
   _id: string;
-  user: User;
+  user: Types.ObjectId;
   content: string;
   images: string[];
   likes: number;
@@ -24,7 +24,7 @@ export interface PostForListDTO {
 }
 
 export interface PostForCreateDTO {
-  user: User;
+  user: string;
   content: string;
   images: string[];
 }

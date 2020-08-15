@@ -20,7 +20,7 @@ export default class PostService {
   async getPosts(userId: string): Promise<PostForListDTO[]> {
     const postsFetched = await this.postModel
       .find({})
-      .populate('user', ['_id', 'fullName', 'username', 'avatar'])
+      .populate('user', '_id fullName username avatar')
       .sort({ createdAt: 'desc' });
 
     return postsFetched.map((post: Post) => ({
@@ -31,7 +31,7 @@ export default class PostService {
       likes: post.likes.length,
       comments: post.comments.length,
       // Check if post has been liked by the current user
-      liked: post.likes.some((user: User) => {
+      liked: post.likes.some((user) => {
         // Check if user exist for prevent error
         if (!user) return false;
         return user._id == userId;
@@ -87,9 +87,7 @@ export default class PostService {
     const post = await postFetched.save().then(
       (postSaved) =>
         // eslint-disable-next-line implicit-arrow-linebreak
-        postSaved
-          .populate('user', '_id fullName username avatar')
-          .execPopulate(),
+        postSaved.populate('user', '_id fullName username').execPopulate(),
       // eslint-disable-next-line function-paren-newline
     );
 
@@ -137,26 +135,24 @@ export default class PostService {
     }
 
     const postsFetched = await this.postModel
-      .find()
-      .populate('user', ['_id', 'fullName', 'username', 'avatar'])
+      .find({ user: userId })
+      .populate('user', '_id fullName username avatar')
       .sort({ createdAt: 'desc' });
 
-    return postsFetched
-      .filter((post) => post.user._id == userId)
-      .map((post: Post) => ({
-        _id: post._id,
-        user: post.user,
-        content: post.content,
-        images: post.images,
-        likes: post.likes.length,
-        comments: post.comments.length,
-        // Check if post has been liked by the current user
-        liked: post.likes.some((user: User) => {
-          // Check if user exist for prevent error
-          if (!user) return false;
-          return user._id == userId;
-        }),
-        createdAt: post.createdAt,
-      }));
+    return postsFetched.map((post: Post) => ({
+      _id: post._id,
+      user: post.user,
+      content: post.content,
+      images: post.images,
+      likes: post.likes.length,
+      comments: post.comments.length,
+      // Check if post has been liked by the current user
+      liked: post.likes.some((user: User) => {
+        // Check if user exist for prevent error
+        if (!user) return false;
+        return user._id == userId;
+      }),
+      createdAt: post.createdAt,
+    }));
   }
 }

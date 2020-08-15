@@ -8,7 +8,6 @@ import { body, validationResult } from 'express-validator';
 import PostService from '../../services/post.service';
 import middlewares from '../middlewares/index';
 import { BadRequestError } from '../../helpers/errors';
-import { PostForListDTO, LikesOfPostDTO } from '../../interfaces/post';
 
 const storage = multer.diskStorage({
   destination: 'uploads',
@@ -36,22 +35,32 @@ const route = Router();
 export default (app: Router): void => {
   app.use('/posts', route);
 
+  /**
+   * GET posts
+   * @description Get all posts
+   * @response 200 - OK
+   */
+
   route.get(
     '/',
     middlewares.auth,
     async (req: Request, res: Response, next: NextFunction) => {
-      const postServiceInstance: PostService = Container.get(PostService);
+      const postServiceInstance = Container.get(PostService);
 
       try {
-        const response: PostForListDTO[] = await postServiceInstance.getPosts(
-          req.userId,
-        );
+        const response = await postServiceInstance.getPosts(req.userId);
         return res.status(200).json(response);
       } catch (error) {
         return next(error);
       }
     },
   );
+
+  /**
+   * POST posts
+   * @description Create a post
+   * @response 201 - Created
+   */
 
   route.post(
     '/',
@@ -65,7 +74,7 @@ export default (app: Router): void => {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const postServiceInstance: PostService = Container.get(PostService);
+      const postServiceInstance = Container.get(PostService);
 
       const images = JSON.parse(JSON.stringify(req.files)).map(
         (file: Express.Multer.File) => `/uploads/${file.filename}`,
@@ -85,11 +94,18 @@ export default (app: Router): void => {
     },
   );
 
+  /**
+   * DELETE posts/{postId}
+   * @description Delete a post
+   * @pathParam {string} postId - ID of post
+   * @response 204 - No Content
+   */
+
   route.delete(
     '/:postId',
     middlewares.auth,
     async (req: Request, res: Response, next: NextFunction) => {
-      const postServiceInstance: PostService = Container.get(PostService);
+      const postServiceInstance = Container.get(PostService);
 
       try {
         await postServiceInstance.deletePost(req.params.postId);
@@ -100,11 +116,18 @@ export default (app: Router): void => {
     },
   );
 
+  /**
+   * POST posts/like/{postId}
+   * @description Returns the post liked
+   * @pathParam {string} postId - ID of post
+   * @response 200 - OK
+   */
+
   route.post(
     '/like/:postId',
     middlewares.auth,
     async (req: Request, res: Response, next: NextFunction) => {
-      const postServiceInstance: PostService = Container.get(PostService);
+      const postServiceInstance = Container.get(PostService);
 
       try {
         const post = await postServiceInstance.likePost(
@@ -118,16 +141,21 @@ export default (app: Router): void => {
     },
   );
 
+  /**
+   * GET posts/likesOf/{postId}
+   * @description Returns people who likes the post
+   * @pathParam {string} postId - ID of post
+   * @response 200 - OK
+   */
+
   route.get(
     '/likesOf/:postId',
     middlewares.auth,
     async (req: Request, res: Response, next: NextFunction) => {
-      const postServiceInstance: PostService = Container.get(PostService);
+      const postServiceInstance = Container.get(PostService);
 
       try {
-        const response: LikesOfPostDTO = await postServiceInstance.getLikes(
-          req.params.postId,
-        );
+        const response = await postServiceInstance.getLikes(req.params.postId);
         return res.status(200).json(response);
       } catch (error) {
         return next(error);
@@ -135,14 +163,21 @@ export default (app: Router): void => {
     },
   );
 
+  /**
+   * GET posts/of/{userId}
+   * @description Returns posts of a user
+   * @pathParam {string} userId - ID of user
+   * @response 200 - OK
+   */
+
   route.get(
     '/of/:userId',
     middlewares.auth,
     async (req: Request, res: Response, next: NextFunction) => {
-      const postServiceInstance: PostService = Container.get(PostService);
+      const postServiceInstance = Container.get(PostService);
 
       try {
-        const response: PostForListDTO[] = await postServiceInstance.getPostsOf(
+        const response = await postServiceInstance.getPostsOf(
           req.params.userId,
         );
         return res.status(200).json(response);
