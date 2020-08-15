@@ -8,7 +8,14 @@ import middlewares from '../middlewares/index';
 const route = Router();
 
 export default (app: Router): void => {
-  app.use('/comment', route);
+  app.use('/comments', route);
+
+  /**
+   * GET comments/{commentId}
+   * @description Get a comment
+   * @pathParam {string} commentId - ID of comment
+   * @response 200 - OK
+   */
 
   route.get(
     '/:commentId',
@@ -27,6 +34,13 @@ export default (app: Router): void => {
       }
     },
   );
+
+  /**
+   * POST comments/comment-post/{postId}
+   * @description Create a comment in a post
+   * @pathParam {string} postId - ID of post
+   * @response 201 - Created
+   */
 
   route.post(
     '/comment-post/:postId',
@@ -56,6 +70,13 @@ export default (app: Router): void => {
     },
   );
 
+  /**
+   * POST comments/comment-comment/{commentId}
+   * @description Create a comment in a comment
+   * @pathParam {string} commentId - ID of comment
+   * @response 201 - Created
+   */
+
   route.post(
     '/comment-comment/:commentId',
     middlewares.auth,
@@ -84,6 +105,13 @@ export default (app: Router): void => {
     },
   );
 
+  /**
+   * DELETE comments/{commentId}
+   * @description Delete a comment
+   * @pathParam {string} commentId - ID of comment
+   * @response 204 - No Content
+   */
+
   route.delete(
     '/:commentId',
     middlewares.auth,
@@ -98,6 +126,13 @@ export default (app: Router): void => {
       }
     },
   );
+
+  /**
+   * POST comments/like/{commentId}
+   * @description Like a comment
+   * @pathParam {string} commentId - ID of comment
+   * @response 204 - No Content
+   */
 
   route.post(
     '/like/:commentId',

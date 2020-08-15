@@ -9,6 +9,12 @@ const route = Router();
 export default (app: Router): void => {
   app.use('/auth', route);
 
+  /**
+   * POST auth/check-username
+   * @description Check if username already exists
+   * @response 204 - No Content
+   */
+
   route.post(
     '/check-username',
     [
@@ -30,9 +36,15 @@ export default (app: Router): void => {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      return res.status(200).end();
+      return res.status(204).end();
     },
   );
+
+  /**
+   * POST auth/check-email
+   * @description Check if email already exists
+   * @response 204 - No Content
+   */
 
   route.post(
     '/check-email',
@@ -58,9 +70,15 @@ export default (app: Router): void => {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      return res.status(200).end();
+      return res.status(204).end();
     },
   );
+
+  /**
+   * POST auth/signup
+   * @description Register an user
+   * @response 201 - Created
+   */
 
   route.post(
     '/signup',
@@ -117,6 +135,12 @@ export default (app: Router): void => {
     },
   );
 
+  /**
+   * POST auth/login
+   * @description Log in an user
+   * @response 200 - OK
+   */
+
   route.post(
     '/login',
     [
@@ -140,6 +164,12 @@ export default (app: Router): void => {
       }
     },
   );
+
+  /**
+   * POST auth/refresh
+   * @description Refresh a token
+   * @response 200 - OK
+   */
 
   route.post(
     '/refresh',
@@ -166,6 +196,12 @@ export default (app: Router): void => {
     },
   );
 
+  /**
+   * POST auth/revoke
+   * @description Revoke a token
+   * @response 204 - No Content
+   */
+
   route.post(
     '/revoke',
     body('refreshToken', 'Refresh token is required').trim().notEmpty(),
@@ -186,6 +222,13 @@ export default (app: Router): void => {
       }
     },
   );
+
+  /**
+   * GET auth/verify-email/{verificationToken}
+   * @description Verify an user email
+   * @pathParam {string} verificationToken - Verification token
+   * @response 200 - OK
+   */
 
   route.get(
     '/verify-email/:verificationToken',

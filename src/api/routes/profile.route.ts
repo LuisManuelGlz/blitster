@@ -9,6 +9,12 @@ const route = Router();
 export default (app: Router): void => {
   app.use('/profile', route);
 
+  /**
+   * GET profile
+   * @description Get current profile
+   * @response 200 - OK
+   */
+
   route.get(
     '/',
     middlewares.auth,
@@ -23,6 +29,13 @@ export default (app: Router): void => {
       }
     },
   );
+
+  /**
+   * GET profile/{userId}
+   * @description Get a profile
+   * @pathParam {string} userId - ID of user
+   * @response 200 - OK
+   */
 
   route.get(
     '/:userId',

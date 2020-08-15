@@ -10,6 +10,12 @@ const route = Router();
 export default (app: Router): void => {
   app.use('/users', route);
 
+  /**
+   * GET users
+   * @description Get all users
+   * @response 200 - OK
+   */
+
   route.get(
     '/',
     middlewares.auth,
@@ -24,6 +30,13 @@ export default (app: Router): void => {
       }
     },
   );
+
+  /**
+   * GET users/{userId}
+   * @description Get a user
+   * @pathParam {string} userId - ID of user
+   * @response 200 - OK
+   */
 
   route.get(
     '/:userId',
@@ -40,6 +53,12 @@ export default (app: Router): void => {
       }
     },
   );
+
+  /**
+   * PUT users
+   * @description Update user info
+   * @response 201 - User info updated
+   */
 
   route.put(
     '/',

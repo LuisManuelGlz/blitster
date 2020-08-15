@@ -1,7 +1,7 @@
 import { Service, Inject } from 'typedi';
 import 'reflect-metadata';
 import { NotFoundError } from '../helpers/errors';
-import { ProfileForDetailDTO } from '../interfaces/profile';
+import { ProfileForListDTO } from '../interfaces/profile';
 
 @Service()
 export default class ProfileService {
@@ -9,28 +9,39 @@ export default class ProfileService {
     @Inject('profileModel') private profileModel: Models.ProfileModel,
   ) {}
 
-  async getMyProfile(userId: string): Promise<ProfileForDetailDTO> {
-    console.log(userId);
+  async getMyProfile(userId: string): Promise<ProfileForListDTO> {
     const profileFetched = await this.profileModel
       .findOne({ user: userId })
       .populate('user', '_id username fullName avatar email');
 
-    if (!profileFetched) throw new NotFoundError('Profile not found!');
+    if (!profileFetched) throw new NotFoundError('User not found!');
 
-    return profileFetched;
+    return {
+      _id: profileFetched._id,
+      user: profileFetched.user,
+      bio: profileFetched.bio,
+      followers: profileFetched.followers.length,
+      following: profileFetched.following.length,
+    };
   }
 
-  async getProfile(userId: string): Promise<ProfileForDetailDTO> {
+  async getProfile(userId: string): Promise<ProfileForListDTO> {
     if (!/^[0-9a-fA-F]{24}$/.exec(userId)) {
       throw new NotFoundError('User not found!');
     }
 
-    const userFetched = await this.profileModel
-      .findById(userId)
+    const profileFetched = await this.profileModel
+      .findOne({ user: userId })
       .populate('user', '_id fullName username avatar');
 
-    if (!userFetched) throw new NotFoundError('Profile not found!');
+    if (!profileFetched) throw new NotFoundError('User not found!');
 
-    return userFetched;
+    return {
+      _id: profileFetched._id,
+      user: profileFetched.user,
+      bio: profileFetched.bio,
+      followers: profileFetched.followers.length,
+      following: profileFetched.following.length,
+    };
   }
 }
