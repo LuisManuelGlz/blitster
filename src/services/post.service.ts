@@ -87,7 +87,9 @@ export default class PostService {
     const post = await postFetched.save().then(
       (postSaved) =>
         // eslint-disable-next-line implicit-arrow-linebreak
-        postSaved.populate('user', '_id fullName username avatar').execPopulate(),
+        postSaved
+          .populate('user', '_id fullName username avatar')
+          .execPopulate(),
       // eslint-disable-next-line function-paren-newline
     );
 

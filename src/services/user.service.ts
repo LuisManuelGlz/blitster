@@ -20,6 +20,7 @@ export default class UserService {
     return usersFetched.map((user: User) => ({
       _id: user._id,
       avatar: user.avatar,
+      profile: user.profile,
       fullName: user.fullName,
       username: user.username,
     }));

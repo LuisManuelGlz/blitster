@@ -5,11 +5,7 @@ const Profile = new Schema(
   {
     bio: {
       type: String,
-    },
-    user: {
-      type: Schema.Types.ObjectId,
-      required: true,
-      ref: 'User',
+      default: 'Hi there!',
     },
     followers: [
       {

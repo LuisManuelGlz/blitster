@@ -13,6 +13,11 @@ const User = new Schema(
       required: true,
       unique: true,
     },
+    profile: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: 'Profile',
+    },
     email: {
       type: String,
       required: true,

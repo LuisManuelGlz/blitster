@@ -1,7 +1,7 @@
 import { Service, Inject } from 'typedi';
 import 'reflect-metadata';
 import { NotFoundError } from '../helpers/errors';
-import { ProfileForListDTO, ProfileForDetailDTO } from '../interfaces/profile';
+import { UserForListDTO } from '../interfaces/user';
 
 @Service()
 export default class FollowService {
@@ -13,46 +13,50 @@ export default class FollowService {
   async follow(
     userId: string,
     userToFollowId: string,
-  ): Promise<ProfileForListDTO> {
+  ): Promise<UserForListDTO> {
     if (!/^[0-9a-fA-F]{24}$/.exec(userToFollowId)) {
       throw new NotFoundError('User not found!');
     }
 
-    const profileToFollowFetched = await this.profileModel.findOne({
-      user: userToFollowId,
-    });
+    const userToFollowFetched = await this.userModel.findById(userToFollowId);
 
-    if (!profileToFollowFetched) throw new NotFoundError('User not found!');
+    if (!userToFollowFetched) throw new NotFoundError('User not found!');
 
-    const followerProfileFetched = await this.profileModel.findOne({
-      user: userId,
-    });
+    const userToFollowProfileFetched = await this.profileModel.findById(
+      userToFollowFetched.profile,
+    );
+
+    if (!userToFollowProfileFetched) {
+      throw new NotFoundError('Profile not found!');
+    }
+
+    const followerFetched = await this.userModel.findById(userId);
+
+    if (!followerFetched) {
+      throw new NotFoundError("Your user account couldn't be found!");
+    }
+
+    const followerProfileFetched = await this.profileModel.findById(
+      followerFetched.profile,
+    );
 
     if (!followerProfileFetched) {
       throw new NotFoundError("Your profile couldn't be found!");
     }
 
     if (
-      profileToFollowFetched.followers.filter(
+      userToFollowProfileFetched.followers.filter(
         (user) => user.toString() === userId,
       ).length === 0
     ) {
-      const userFetched = await this.userModel.findById(userId);
-
-      if (!userFetched) throw new NotFoundError('User not found!');
-
-      const userToFollowFetched = await this.userModel.findById(userToFollowId);
-
-      if (!userToFollowFetched) throw new NotFoundError('User not found!');
-
-      profileToFollowFetched.followers.unshift(userFetched);
+      userToFollowProfileFetched.followers.unshift(followerFetched);
       followerProfileFetched.following.unshift(userToFollowFetched);
     } else {
-      const removeIndex = profileToFollowFetched.followers
+      const removeIndex = userToFollowProfileFetched.followers
         .map((user) => user.toString())
         .indexOf(userId);
 
-      profileToFollowFetched.followers.splice(removeIndex, 1);
+      userToFollowProfileFetched.followers.splice(removeIndex, 1);
 
       const removeFollowedIndex = followerProfileFetched.followers
         .map((user) => user.toString())
@@ -61,73 +65,117 @@ export default class FollowService {
       followerProfileFetched.following.splice(removeFollowedIndex, 1);
     }
 
-    const profile = await profileToFollowFetched.save().then(
-      (profileSaved) =>
-        // eslint-disable-next-line implicit-arrow-linebreak
-        profileSaved
-          .populate('user', '_id fullName username avatar')
-          .execPopulate(),
-      // eslint-disable-next-line function-paren-newline
-    );
-
+    await userToFollowProfileFetched.save();
     await followerProfileFetched.save();
 
+    const userFetched = await this.userModel
+      .findById(userToFollowId)
+      .select('_id username fullName avatar')
+      .populate({
+        path: 'profile',
+        model: 'Profile',
+        select: {
+          _id: 1,
+          bio: 1,
+          followers: 1,
+          following: 1,
+        },
+        populate: [
+          {
+            path: 'followers',
+            model: 'User',
+            select: {
+              _id: 1,
+              fullName: 1,
+              username: 1,
+              avatar: 1,
+            },
+          },
+          {
+            path: 'following',
+            model: 'User',
+            select: {
+              _id: 1,
+              fullName: 1,
+              username: 1,
+              avatar: 1,
+            },
+          },
+        ],
+      });
+
+    if (!userFetched) throw new NotFoundError('User not found!');
+
     return {
-      _id: profile._id,
-      user: profile.user,
-      bio: profile.bio,
-      followers: profile.followers.length,
-      following: profile.following.length,
+      _id: userFetched._id,
+      fullName: userFetched.fullName,
+      username: userFetched.username,
+      avatar: userFetched.avatar,
+      profile: userFetched.profile,
     };
   }
 
-  async getFollowers(userId: string): Promise<ProfileForDetailDTO> {
+  async getFollowers(userId: string): Promise<UserForListDTO> {
     if (!/^[0-9a-fA-F]{24}$/.exec(userId)) {
       throw new NotFoundError('User not found!');
     }
 
-    const profileFetched = await this.profileModel
-      .findOne({ user: userId })
-      .select('followers')
+    const userFetched = await this.userModel
+      .findById(userId)
+      .select('_id')
       .populate({
-        path: 'followers',
-        model: 'User',
+        path: 'profile',
+        model: 'Profile',
         select: {
           _id: 1,
-          fullName: 1,
-          username: 1,
-          avatar: 1,
+          followers: 1,
         },
-      })
-      .sort({ createdAt: 'desc' });
+        populate: {
+          path: 'followers',
+          model: 'User',
+          select: {
+            _id: 1,
+            fullName: 1,
+            username: 1,
+            avatar: 1,
+          },
+        },
+      });
 
-    if (!profileFetched) throw new NotFoundError('User not found!');
+    if (!userFetched) throw new NotFoundError('User not found!');
 
-    return profileFetched;
+    return userFetched;
   }
 
-  async getFollowing(userId: string): Promise<ProfileForDetailDTO> {
+  async getFollowing(userId: string): Promise<UserForListDTO> {
     if (!/^[0-9a-fA-F]{24}$/.exec(userId)) {
       throw new NotFoundError('User not found!');
     }
 
-    const profileFetched = await this.profileModel
-      .findOne({ user: userId })
-      .select('following')
+    const userFetched = await this.userModel
+      .findById(userId)
+      .select('_id')
       .populate({
-        path: 'following',
-        model: 'User',
+        path: 'profile',
+        model: 'Profile',
         select: {
           _id: 1,
-          fullName: 1,
-          username: 1,
-          avatar: 1,
+          following: 1,
         },
-      })
-      .sort({ createdAt: 'desc' });
+        populate: {
+          path: 'following',
+          model: 'User',
+          select: {
+            _id: 1,
+            fullName: 1,
+            username: 1,
+            avatar: 1,
+          },
+        },
+      });
 
-    if (!profileFetched) throw new NotFoundError('User not found!');
+    if (!userFetched) throw new NotFoundError('User not found!');
 
-    return profileFetched;
+    return userFetched;
   }
 }

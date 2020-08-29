@@ -33,11 +33,13 @@ export default class AuthService {
     const { password1 } = userForRegisterDTO;
     const salt = bcrypt.genSaltSync();
     const passwordHash = bcrypt.hashSync(password1, salt);
+    const profileCreated = await this.profileModel.create({});
+    console.log(profileCreated);
     const userCreated = await this.userModel.create({
       ...userForRegisterDTO,
+      profile: profileCreated,
       passwordHash,
     });
-    await this.profileModel.create({ user: userCreated._id });
     const verificationToken = randtoken.uid(32);
 
     await this.tokenModel.create({

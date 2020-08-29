@@ -5,6 +5,7 @@ export interface User extends Document {
   fullName: string;
   email: string;
   username: string;
+  profile: string;
   role: string;
   passwordHash: string;
   avatar: string;
@@ -29,6 +30,7 @@ export interface UserForListDTO {
   fullName: string;
   username: string;
   avatar: string;
+  profile: string;
 }
 
 export interface UserForDetailDTO {
@@ -36,6 +38,7 @@ export interface UserForDetailDTO {
   fullName: string;
   username: string;
   avatar: string;
+  profile: string;
 }
 
 export interface AccountForUpdateDTO {
