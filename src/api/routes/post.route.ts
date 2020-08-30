@@ -164,21 +164,22 @@ export default (app: Router): void => {
   );
 
   /**
-   * GET posts/of/{userId}
+   * GET posts/of/{postsOwnerId}
    * @description Returns posts of a user
-   * @pathParam {string} userId - ID of user
+   * @pathParam {string} postsOwnerId - ID of postsOwner
    * @response 200 - OK
    */
 
   route.get(
-    '/of/:userId',
+    '/of/:postsOwnerId',
     middlewares.auth,
     async (req: Request, res: Response, next: NextFunction) => {
       const postServiceInstance = Container.get(PostService);
 
       try {
         const response = await postServiceInstance.getPostsOf(
-          req.params.userId,
+          req.userId,
+          req.params.postsOwnerId,
         );
         return res.status(200).json(response);
       } catch (error) {

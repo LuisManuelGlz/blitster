@@ -131,13 +131,16 @@ export default class PostService {
     return postFetched;
   }
 
-  async getPostsOf(userId: string): Promise<PostForListDTO[]> {
+  async getPostsOf(
+    userId: string,
+    postsOwnerId: string,
+  ): Promise<PostForListDTO[]> {
     if (!/^[0-9a-fA-F]{24}$/.exec(userId)) {
       throw new NotFoundError('User not found!');
     }
 
     const postsFetched = await this.postModel
-      .find({ user: userId })
+      .find({ user: postsOwnerId })
       .populate('user', '_id fullName username avatar')
       .sort({ createdAt: 'desc' });
 
