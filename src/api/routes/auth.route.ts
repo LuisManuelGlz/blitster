@@ -10,9 +10,36 @@ export default (app: Router): void => {
   app.use('/auth', route);
 
   /**
-   * POST auth/check-username
-   * @description Check if username already exists
-   * @response 204 - No Content
+   * @swagger
+   * tags:
+   *   name: Auth
+   *   description: Auth management
+   */
+
+  /**
+   * @swagger
+   *
+   * /api/auth/check-username:
+   *   post:
+   *     tags: [Auth]
+   *     summary: Check if username already exists
+   *     produces:
+   *       - application/json
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - username
+   *             properties:
+   *               username:
+   *                 type: string
+   *                 description: Username to check.
+   *     responses:
+   *       204:
+   *         description: No content
    */
 
   route.post(
@@ -41,9 +68,30 @@ export default (app: Router): void => {
   );
 
   /**
-   * POST auth/check-email
-   * @description Check if email already exists
-   * @response 204 - No Content
+   * @swagger
+   *
+   * /api/auth/check-email:
+   *   post:
+   *     tags: [Auth]
+   *     summary: Check if email already exists
+   *     produces:
+   *       - application/json
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - email
+   *             properties:
+   *               email:
+   *                 type: string
+   *                 format: email
+   *                 description: Email to check.
+   *     responses:
+   *       204:
+   *         description: No content
    */
 
   route.post(
@@ -75,9 +123,23 @@ export default (app: Router): void => {
   );
 
   /**
-   * POST auth/signup
-   * @description Register an user
-   * @response 201 - Created
+   * @swagger
+   *
+   * /api/auth/signup:
+   *   post:
+   *     tags: [Auth]
+   *     summary: Register an user
+   *     produces:
+   *       - application/json
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/UserForRegisterDTO'
+   *     responses:
+   *       201:
+   *         description: User created successfully
    */
 
   route.post(

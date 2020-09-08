@@ -1,3 +1,36 @@
+/**
+ * @swagger
+ *  components:
+ *    schemas:
+ *      UserForRegisterDTO:
+ *        type: object
+ *        required:
+ *          - fullName
+ *          - username
+ *          - email
+ *          - password1
+ *          - password2
+ *        properties:
+ *          fullName:
+ *            type: string
+ *            description: Full name to use for register.
+ *          username:
+ *            type: string
+ *            description: Username to use for register, needs to be unique.
+ *          email:
+ *            type: string
+ *            format: email
+ *            description: Email to use for register, needs to be unique.
+ *          password1:
+ *            type: string
+ *            minimum: 8
+ *            description: Password to use for register, needs to have 8 characters or more.
+ *          password2:
+ *            type: string
+ *            minimum: 8
+ *            description: Password to use for register, needs to be the same to password1.
+ */
+
 import { Document } from 'mongoose';
 
 export interface User extends Document {
