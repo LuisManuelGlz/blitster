@@ -39,7 +39,7 @@ export default (app: Router): void => {
    *                 description: Username to check.
    *     responses:
    *       204:
-   *         description: No content
+   *         description: No content.
    */
 
   route.post(
@@ -91,7 +91,7 @@ export default (app: Router): void => {
    *                 description: Email to check.
    *     responses:
    *       204:
-   *         description: No content
+   *         description: No content.
    */
 
   route.post(
@@ -139,7 +139,7 @@ export default (app: Router): void => {
    *             $ref: '#/components/schemas/UserForRegisterDTO'
    *     responses:
    *       201:
-   *         description: User created successfully
+   *         description: User created successfully.
    */
 
   route.post(
@@ -198,9 +198,23 @@ export default (app: Router): void => {
   );
 
   /**
-   * POST auth/login
-   * @description Log in an user
-   * @response 200 - OK
+   * @swagger
+   *
+   * /api/auth/login:
+   *   post:
+   *     tags: [Auth]
+   *     summary: Log in an user
+   *     produces:
+   *       - application/json
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/UserForLoginDTO'
+   *     responses:
+   *       200:
+   *         description: User logged in successfully.
    */
 
   route.post(
@@ -228,9 +242,33 @@ export default (app: Router): void => {
   );
 
   /**
-   * POST auth/refresh
-   * @description Refresh a token
-   * @response 200 - OK
+   * @swagger
+   *
+   * /api/auth/refresh:
+   *   post:
+   *     tags: [Auth]
+   *     summary: Refresh a token
+   *     produces:
+   *       - application/json
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - userId
+   *               - refreshToken
+   *             properties:
+   *               userId:
+   *                 type: string
+   *                 description: Id of user.
+   *               refreshToken:
+   *                 type: string
+   *                 description: Expired token.
+   *     responses:
+   *       200:
+   *         description: Token refreshed successfully.
    */
 
   route.post(
@@ -259,9 +297,29 @@ export default (app: Router): void => {
   );
 
   /**
-   * POST auth/revoke
-   * @description Revoke a token
-   * @response 204 - No Content
+   * @swagger
+   *
+   * /api/auth/revoke:
+   *   post:
+   *     tags: [Auth]
+   *     summary: Revoke a token
+   *     produces:
+   *       - application/json
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - refreshToken
+   *             properties:
+   *               refreshToken:
+   *                 type: string
+   *                 description: Refresh token to revoke.
+   *     responses:
+   *       204:
+   *         description: No content.
    */
 
   route.post(
@@ -286,10 +344,24 @@ export default (app: Router): void => {
   );
 
   /**
-   * GET auth/verify-email/{verificationToken}
-   * @description Verify an user email
-   * @pathParam {string} verificationToken - Verification token
-   * @response 200 - OK
+   * @swagger
+   *
+   * /api/auth/verify-email/{verificationToken}:
+   *   get:
+   *     tags: [Auth]
+   *     summary: Verify an user email
+   *     produces:
+   *       - application/json
+   *     parameters:
+   *       - in: path
+   *         name: verificationToken
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: Verification token for verify user email
+   *     responses:
+   *       200:
+   *         description: User email verified successfully.
    */
 
   route.get(

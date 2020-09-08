@@ -29,6 +29,18 @@
  *            type: string
  *            minimum: 8
  *            description: Password to use for register, needs to be the same to password1.
+ *      UserForLoginDTO:
+ *        type: object
+ *        required:
+ *          - username
+ *          - password
+ *        properties:
+ *          username:
+ *            type: string
+ *            description: Username to use for login.
+ *          password:
+ *            type: string
+ *            description: Password to use for login.
  */
 
 import { Document } from 'mongoose';
