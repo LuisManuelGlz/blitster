@@ -1,3 +1,14 @@
+/**
+ * @swagger
+ *
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+
 import { Document } from 'mongoose';
 import { User } from './user';
 

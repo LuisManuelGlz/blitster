@@ -11,9 +11,28 @@ export default (app: Router): void => {
   app.use('/users', route);
 
   /**
-   * GET users
-   * @description Get all users
-   * @response 200 - OK
+   * @swagger
+   * tags:
+   *   name: User
+   *   description: User management
+   */
+
+  /**
+   * @swagger
+   *
+   * /api/users:
+   *   get:
+   *     tags: [User]
+   *     summary: Get all users
+   *     produces:
+   *       - application/json
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       200:
+   *         description: Ok
+   *       401:
+   *         description: Unauthorized
    */
 
   route.get(
@@ -32,10 +51,28 @@ export default (app: Router): void => {
   );
 
   /**
-   * GET users/{userId}
-   * @description Get a user
-   * @pathParam {string} userId - ID of user
-   * @response 200 - OK
+   * @swagger
+   *
+   * /api/users/{userId}:
+   *   get:
+   *     tags: [User]
+   *     summary: Get a users
+   *     produces:
+   *       - application/json
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: userId
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: ID of user
+   *     responses:
+   *       200:
+   *         description: Ok
+   *       401:
+   *         description: Unauthorized
    */
 
   route.get(

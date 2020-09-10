@@ -39,7 +39,7 @@ export default (app: Router): void => {
    *                 description: Username to check.
    *     responses:
    *       204:
-   *         description: No content.
+   *         description: No content
    */
 
   route.post(
@@ -91,7 +91,7 @@ export default (app: Router): void => {
    *                 description: Email to check.
    *     responses:
    *       204:
-   *         description: No content.
+   *         description: No content
    */
 
   route.post(
@@ -139,7 +139,7 @@ export default (app: Router): void => {
    *             $ref: '#/components/schemas/UserForRegisterDTO'
    *     responses:
    *       201:
-   *         description: User created successfully.
+   *         description: User created successfully
    */
 
   route.post(
@@ -214,7 +214,7 @@ export default (app: Router): void => {
    *             $ref: '#/components/schemas/UserForLoginDTO'
    *     responses:
    *       200:
-   *         description: User logged in successfully.
+   *         description: User logged in successfully
    */
 
   route.post(
@@ -268,7 +268,7 @@ export default (app: Router): void => {
    *                 description: Expired token.
    *     responses:
    *       200:
-   *         description: Token refreshed successfully.
+   *         description: Token refreshed successfully
    */
 
   route.post(
@@ -319,7 +319,7 @@ export default (app: Router): void => {
    *                 description: Refresh token to revoke.
    *     responses:
    *       204:
-   *         description: No content.
+   *         description: No content
    */
 
   route.post(
@@ -361,7 +361,7 @@ export default (app: Router): void => {
    *         description: Verification token for verify user email
    *     responses:
    *       200:
-   *         description: User email verified successfully.
+   *         description: User email verified successfully
    */
 
   route.get(
