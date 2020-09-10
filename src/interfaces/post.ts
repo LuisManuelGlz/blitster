@@ -1,3 +1,23 @@
+/**
+ * @swagger
+ *  components:
+ *    schemas:
+ *      PostForCreateDTO:
+ *        type: object
+ *        required:
+ *          - content
+ *        properties:
+ *          content:
+ *            type: string
+ *            description: Content of post.
+ *          images:
+ *            type: array
+ *            description: Images of post, this property is optional.
+ *            items:
+ *              type: string
+ *              format: binary
+ */
+
 import { Document, Types } from 'mongoose';
 import { Comment } from './comment';
 import { User } from './user';

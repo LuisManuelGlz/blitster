@@ -36,9 +36,21 @@ export default (app: Router): void => {
   app.use('/posts', route);
 
   /**
-   * GET posts
-   * @description Get all posts
-   * @response 200 - OK
+   * @swagger
+   *
+   * /api/posts:
+   *   get:
+   *     tags: [Post]
+   *     summary: Get all posts
+   *     produces:
+   *       - application/json
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       200:
+   *         description: Ok
+   *       401:
+   *         description: Unauthorized
    */
 
   route.get(
@@ -57,9 +69,26 @@ export default (app: Router): void => {
   );
 
   /**
-   * POST posts
-   * @description Create a post
-   * @response 201 - Created
+   * @swagger
+   *
+   * /api/posts:
+   *   post:
+   *     tags: [Post]
+   *     summary: Create a post
+   *     produces:
+   *       - application/json
+   *     security:
+   *       - bearerAuth: []
+   *     requestBody:
+   *       content:
+   *         multipart/form-data:
+   *           schema:
+   *             $ref: '#/components/schemas/PostForCreateDTO'
+   *     responses:
+   *       201:
+   *         description: Post created successfully
+   *       401:
+   *         description: Unauthorized
    */
 
   route.post(
@@ -95,10 +124,30 @@ export default (app: Router): void => {
   );
 
   /**
-   * DELETE posts/{postId}
-   * @description Delete a post
-   * @pathParam {string} postId - ID of post
-   * @response 204 - No Content
+   * @swagger
+   *
+   * /api/posts/{postId}:
+   *   delete:
+   *     tags: [Post]
+   *     summary: Delete a post
+   *     produces:
+   *       - application/json
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: postId
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: ID of post
+   *     responses:
+   *       204:
+   *         description: Post deleted successfully
+   *       401:
+   *         description: Unauthorized
+   *       404:
+   *         description: Post not found
    */
 
   route.delete(
@@ -117,10 +166,30 @@ export default (app: Router): void => {
   );
 
   /**
-   * POST posts/like/{postId}
-   * @description Returns the post liked
-   * @pathParam {string} postId - ID of post
-   * @response 200 - OK
+   * @swagger
+   *
+   * /api/posts/like/{postId}:
+   *   post:
+   *     tags: [Post]
+   *     summary: Returns the post liked
+   *     produces:
+   *       - application/json
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: postId
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: ID of post
+   *     responses:
+   *       200:
+   *         description: Ok
+   *       401:
+   *         description: Unauthorized
+   *       404:
+   *         description: Post not found
    */
 
   route.post(
@@ -142,10 +211,30 @@ export default (app: Router): void => {
   );
 
   /**
-   * GET posts/likesOf/{postId}
-   * @description Returns people who likes the post
-   * @pathParam {string} postId - ID of post
-   * @response 200 - OK
+   * @swagger
+   *
+   * /api/posts/likesOf/{postId}:
+   *   get:
+   *     tags: [Post]
+   *     summary: Returns people who likes the post
+   *     produces:
+   *       - application/json
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: postId
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: ID of post
+   *     responses:
+   *       200:
+   *         description: Ok
+   *       401:
+   *         description: Unauthorized
+   *       404:
+   *         description: Post not found
    */
 
   route.get(
@@ -164,10 +253,30 @@ export default (app: Router): void => {
   );
 
   /**
-   * GET posts/of/{postsOwnerId}
-   * @description Returns posts of a user
-   * @pathParam {string} postsOwnerId - ID of postsOwner
-   * @response 200 - OK
+   * @swagger
+   *
+   * /api/posts/of/{postsOwnerId}:
+   *   get:
+   *     tags: [Post]
+   *     summary: Returns posts of a user
+   *     produces:
+   *       - application/json
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: postsOwnerId
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: ID of posts owner
+   *     responses:
+   *       200:
+   *         description: Ok
+   *       401:
+   *         description: Unauthorized
+   *       404:
+   *         description: User not found
    */
 
   route.get(
