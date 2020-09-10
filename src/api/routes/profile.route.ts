@@ -10,9 +10,28 @@ export default (app: Router): void => {
   app.use('/profile', route);
 
   /**
-   * GET profile
-   * @description Get current profile
-   * @response 200 - OK
+   * @swagger
+   * tags:
+   *   name: Profile
+   *   description: Profile management
+   */
+
+  /**
+   * @swagger
+   *
+   * /api/profile:
+   *   get:
+   *     tags: [Profile]
+   *     summary: Get current profile
+   *     produces:
+   *       - application/json
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       200:
+   *         description: Ok
+   *       401:
+   *         description: Unauthorized
    */
 
   route.get(
@@ -31,10 +50,28 @@ export default (app: Router): void => {
   );
 
   /**
-   * GET profile/{userId}
-   * @description Get a profile
-   * @pathParam {string} userId - ID of user
-   * @response 200 - OK
+   * @swagger
+   *
+   * /api/profile/{userId}:
+   *   get:
+   *     tags: [Profile]
+   *     summary: Get a profile
+   *     produces:
+   *       - application/json
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: userId
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: ID of user
+   *     responses:
+   *       200:
+   *         description: Ok
+   *       401:
+   *         description: Unauthorized
    */
 
   route.get(
