@@ -10,10 +10,35 @@ export default (app: Router): void => {
   app.use('/follow', route);
 
   /**
-   * POST follow/{userToFollowId}
-   * @description Follow a profile
-   * @pathParam {string} userToFollowId - ID of user to follow
-   * @response 200 - OK
+   * @swagger
+   * tags:
+   *   name: Follow
+   *   description: Follow management
+   */
+
+  /**
+   * @swagger
+   *
+   * /api/follow/{userToFollowId}:
+   *   post:
+   *     tags: [Follow]
+   *     summary: Follow a user
+   *     produces:
+   *       - application/json
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: userToFollowId
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: ID of user to follow
+   *     responses:
+   *       200:
+   *         description: Ok
+   *       401:
+   *         description: Unauthorized
    */
 
   route.post(
@@ -35,10 +60,28 @@ export default (app: Router): void => {
   );
 
   /**
-   * GET follow/get-followers/{userId}
-   * @description Get all followers of a profile
-   * @pathParam {string} userId - ID of user
-   * @response 200 - OK
+   * @swagger
+   *
+   * /api/follow/get-followers/{userId}:
+   *   get:
+   *     tags: [Follow]
+   *     summary: Get all followers of a user
+   *     produces:
+   *       - application/json
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: userId
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: ID of user
+   *     responses:
+   *       200:
+   *         description: Ok
+   *       401:
+   *         description: Unauthorized
    */
 
   route.get(
@@ -60,10 +103,28 @@ export default (app: Router): void => {
   );
 
   /**
-   * GET follow/get-following/{userId}
-   * @description Get all following of a profile
-   * @pathParam {string} userId - ID of user
-   * @response 200 - OK
+   * @swagger
+   *
+   * /api/follow/get-following/{userId}:
+   *   get:
+   *     tags: [Follow]
+   *     summary: Get all following of a user
+   *     produces:
+   *       - application/json
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: userId
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: ID of user
+   *     responses:
+   *       200:
+   *         description: Ok
+   *       401:
+   *         description: Unauthorized
    */
 
   route.get(
